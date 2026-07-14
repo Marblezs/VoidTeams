@@ -1,0 +1,13 @@
+# VoidTeams Configuration
+
+# eliminar todos los equipos cuando el servidor se apaga/reinicia
+clear-teams-on-stop: true
+
+# Tamaño maximo de jugadores por equipo por defecto
+max-team-size: 1
+
+# Tipo de equipo por defecto (Choosen o Random)
+team-type: "Choosen"
+
+# Permitir a los jugadores usar el chat privado de su equipo (Usando /team chat)"
+allow-team-chat: true

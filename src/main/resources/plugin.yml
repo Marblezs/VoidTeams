@@ -1,0 +1,15 @@
+name: VoidTeams
+version: 1.0
+main: me.VoidTeams.VoidTeams
+api-version: 1.21
+author: MarcyWu
+
+commands:
+  team:
+    description: Comando de gestion de equipos para jugadores.
+    aliases: [t]
+    permission: VoidTeams.Member
+  teamadmin:
+    description: Comando administrativo para gestionar equipos del UHC.
+    aliases: [ta, teamadm]
+    permission: VoidTeams.admin
