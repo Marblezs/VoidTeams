@@ -3,6 +3,7 @@ version: 1.0
 main: me.VoidTeams.VoidTeams
 api-version: 1.21
 author: MarcyWu
+softdepend: [PlaceholderAPI]
 
 commands:
   team:
