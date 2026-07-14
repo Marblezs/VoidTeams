@@ -21,3 +21,9 @@ Admins:
 > shuffle (Solo en randoms)
 > shuffleforce (solo jugadores sin teams)
 ```
+added new hooks
+```
+%voidteams_size%
+%voidteams_type%
+%voidteams_team%
+```
