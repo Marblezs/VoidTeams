@@ -15,11 +15,6 @@ public class VoidTeams extends JavaPlugin {
     private TeamManager teamManager;
     private RandomTeamManager randomTeamManager;
     private TeamsData teamsData;
-    private final VoidTeams plugin;
-
-    public VoidTeams(VoidTeams plugin) {
-        this.plugin = plugin;
-    }
 
     @Override
     public void onEnable() {
@@ -43,6 +38,7 @@ public class VoidTeams extends JavaPlugin {
             getLogger().info("PlaceholderAPI detectado, integrando placeholders.");
         }
     }
+
     @Override
     public void onDisable() {
         if (getConfig().getBoolean("clear-teams-on-stop", false)) {
