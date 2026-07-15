@@ -1,28 +1,53 @@
 # VoidTeams
-VoidTeams is a plugin designed for fast &amp; custom form of making teams on minecraft 1.21.11
-include the next list of commands
-```
-With /team /t (SubCommand)
-Users:
-> Chat: this toggles the team chat if is true on config.yml
-> Invite: provides invitations and autocreation of a team
-> Leave: Leaves your team
-> Color: Changes the color of your team
-> accept: accepts the invitation
-> With /teamadmin /ta
-Admins:
-> Force (p1) (p2)
-> Type (Random/Choosen) (MaxSize)
-> Remove (p) Removes the player from a team
-> Disband (p) Removes the whole team
-> clear removes all teams
-> color & icon (p) changes the color or icon
-> shuffle (Solo en randoms)
-> shuffleforce (solo jugadores sin teams)
-```
-added new hooks
-```
-%voidteams_size%
-%voidteams_type%
-%voidteams_team%
-```
+
+VoidTeams is a lightweight team management plugin for Minecraft 1.21.x. It’s designed to be fast, simple, and highly customizable for UHC or competitive setups.
+
+## Features
+* **Flexible Team Modes:** Choose between "Choosen" (invite-based) or "Random" (automated) teams.
+* **Team Chat:** Toggleable chat channels to keep your team communication private.
+* **Customization:** Configurable icons, colors, and team sizes via `config.yml`.
+* **PlaceholderAPI Support:** Integrated hooks for your scoreboard or chat plugins.
+* **Admin Tools:** Full control to force joins, shuffle teams, or lock the entire system.
+
+---
+
+## Commands
+
+### User Commands (`/team` or `/t`)
+| Command | Description |
+| :--- | :--- |
+| `/team invite <player>` | Invite a player to your team. |
+| `/team accept <player>` | Accept an incoming team invitation. |
+| `/team leave` | Leave your current team. |
+| `/team color` | Change your team's display color. |
+| `/team chat` | Toggle your private team chat. |
+
+### Admin Commands (`/teamadmin` or `/ta`)
+| Command | Description |
+| :--- | :--- |
+| `/ta force <p1> <p2>` | Force p1 into p2's team. |
+| `/ta type <Random/Choosen> <size>` | Set the team mode and max size. |
+| `/ta remove <player>` | Remove a player from their team. |
+| `/ta disband <player>` | Disband a player's team. |
+| `/ta clear` | Remove all existing teams. |
+| `/ta color/icon <player>` | Change a specific team's color or icon. |
+| `/ta shuffle` | Randomize all online players into teams. |
+| `/ta shuffleforce` | Randomize only players currently without a team. |
+| `/ta block <all/chat/teams/none>` | Lock specific system functions. |
+| `/ta reload` | Reload the plugin configuration. |
+
+---
+
+## Placeholders
+Requires [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) installed.
+
+* `%voidteams_size%` - Returns the current team size.
+* `%voidteams_type%` - Returns the current team mode (Random/Choosen).
+* `%voidteams_team%` - Returns the player's team name/ID.
+
+---
+
+## Installation
+1. Drop `VoidTeams.jar` into your `/plugins` folder.
+2. Restart your server.
+3. Edit the `config.yml` to your liking and run `/teamadmin reload`.
