@@ -27,11 +27,14 @@ public class TeamAdminCommands implements CommandExecutor {
         if (args.length == 0) {
             ChatUtil.msg(sender, "&8&m--------------------------------");
             ChatUtil.msg(sender, "&f/teamadm color <jugador> &7- Asigna un color al equipo");
+            ChatUtil.msg(sender, "&f/teamadm icon <jugador> &7- Asigna un icono al equipo");
             ChatUtil.msg(sender, "&f/teamadm remove <jugador> &7- Remueve a alguien del equipo");
             ChatUtil.msg(sender, "&f/teamadm disband <jugador> &7- Remueve el equipo completo.");
-            ChatUtil.msg(sender, "&f/teamadm leave &7- Elimina todos los equipos.");
-            ChatUtil.msg(sender, "&f/teamadm leave &7- Elimina todos los equipos.");
+            ChatUtil.msg(sender, "&f/teamadm clear &7- Elimina todos los equipos.");
+            ChatUtil.msg(sender, "&f/teamadm force <jugador1> <jugador2> &7- Mover jugador1 a jugador2 .");
             ChatUtil.msg(sender, "&f/teamadm shuffle &7- Realiza aleatoriedad en los equipos");
+            ChatUtil.msg(sender, "&f/teamadm shuffleforce &7- Realiza aleatoriedad en los equipos SI O SI");
+            ChatUtil.msg(sender, "&f/teamadm block &7- Realiza los bloqueos correspondiente");
             ChatUtil.msg(sender, "&8&m--------------------------------");
             return true;
         }
@@ -113,6 +116,38 @@ public class TeamAdminCommands implements CommandExecutor {
                 } catch (NumberFormatException e) {
                     ChatUtil.msg(sender, "&cEl tamaño debe ser un numero valido.");
                 }
+            }
+            case "block" -> {
+                if (args.length < 2) {
+                    ChatUtil.msg(sender, "&cUso: /teamadmin block <all|chat|teams|none>");
+                    return true;
+                }
+                String target = args[1].toLowerCase();
+                switch (target) {
+                    case "all" -> {
+                        plugin.getTeamManager().setTeamsLocked(true);
+                        plugin.getTeamManager().setChatLocked(true);
+                        ChatUtil.broadcast("&cTodo el sistema de equipos y chat ha sido bloqueado por la administración.");
+                    }
+                    case "chat" -> {
+                        plugin.getTeamManager().setChatLocked(true);
+                        ChatUtil.broadcast("&cEl chat de equipo ha sido bloqueado.");
+                    }
+                    case "teams" -> {
+                        plugin.getTeamManager().setTeamsLocked(true);
+                        ChatUtil.broadcast("&cLa creación y modificación de equipos ha sido bloqueada.");
+                    }
+                    case "none" -> {
+                        plugin.getTeamManager().setTeamsLocked(false);
+                        plugin.getTeamManager().setChatLocked(false);
+                        ChatUtil.broadcast("&aEl sistema de equipos y chat ha sido desbloqueado.");
+                    }
+                    default -> ChatUtil.msg(sender, "&cOpción inválida. Usa: all, chat, teams, none.");
+                }
+            }
+            case "reload" -> {
+                plugin.getTeamManager().reloadConfigValues();
+                ChatUtil.msg(sender, "&aConfiguración de VoidTeams recargada correctamente.");
             }
 
             default -> ChatUtil.msg(sender, "&cComando desconocido.");

@@ -9,12 +9,12 @@ max-team-size: 1
 # Tipo de equipo por defecto (Choosen o Random)
 team-type: "Choosen"
 
-# Permitir a los jugadores usar el chat privado de su equipo (Usando /team chat)"
-allow-team-chat: true
+# Permitir a los jugadores dañar a sus compañeros de equipo
+friendly-fire: false
 
 # true = usa los iconos de la lista (ej: ⚔, ★)
 # false = usa un numeral aleatorio (ej: #1, #45, #99)
-use-custom-icons: false
+use-custom-icons: true
 
 # Lista de iconos (solo se usa si use-custom-icons está en true)
 team-icons:

@@ -23,11 +23,6 @@ public class TeamCommands implements CommandExecutor {
             return true;
         }
 
-        if (!player.hasPermission("Voiduhc.Member")) {
-            ChatUtil.msg(sender, "&cSin permisos.");
-            return true;
-        }
-
         if (args.length == 0) {
             ChatUtil.msg(sender, "&8&m--------------------------------");
             ChatUtil.msg(sender, "&f/team color &7- Asigna un color rapido al equipo");

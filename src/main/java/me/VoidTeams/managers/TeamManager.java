@@ -16,6 +16,12 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+// importaciones importantes imports para importar.
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+
 public class TeamManager {
 
     private final VoidTeams plugin;
@@ -24,6 +30,17 @@ public class TeamManager {
 
     private String teamType;
     private int teamSize;
+    // var de bloqueo
+    private boolean teamsLocked = false;
+    private boolean chatLocked = false;
+
+    // gett y setts
+    public boolean isTeamsLocked() { return teamsLocked; }
+    public boolean isChatLocked() { return chatLocked; }
+    public void setTeamsLocked(boolean locked) { this.teamsLocked = locked; }
+    public void setChatLocked(boolean locked) { this.chatLocked = locked; }
+
+
     //scoreboard discreto para radicate
     private final org.bukkit.scoreboard.Objective datapackObj;
     private int nextTeamId = 1;
@@ -79,6 +96,11 @@ public class TeamManager {
         if (teamType.equalsIgnoreCase("Random")) {
             ChatUtil.msg(inviter, "&cNo puedes invitar jugadores en el modo Random.");
             return;
+
+        }
+        if (teamsLocked) {
+            ChatUtil.msg(inviter, "&cLa creación y modificación de equipos está bloqueada.");
+            return;
         }
 
         Team myTeam = sb.getEntryTeam(inviter.getName());
@@ -89,10 +111,21 @@ public class TeamManager {
 
         pendingInvites.put(target.getUniqueId(), inviter.getUniqueId());
         ChatUtil.msg(inviter, "&aInvitacion enviada a &b" + target.getName());
-        ChatUtil.msg(target, "&b" + inviter.getName() + " &ate ha invitado a su equipo. Usa /team accept " + inviter.getName());
+        TextComponent msg = new TextComponent(ChatColor.translateAlternateColorCodes('&', "&b" + inviter.getName() + " &ate ha invitado a su equipo. "));
+        TextComponent click = new TextComponent(ChatColor.translateAlternateColorCodes('&', "&e&l[HAZ CLICK AQUI PARA ACEPTAR]"));
+
+        click.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/team accept " + inviter.getName()));
+        click.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GREEN + "Click para unirte al equipo de " + inviter.getName()).create()));
+
+        msg.addExtra(click);
+        target.spigot().sendMessage(msg);
     }
 
     public void acceptInvite(Player player, Player leader) {
+        if (teamsLocked) {
+            ChatUtil.msg(player, "&cNo puedes unirte a equipos en este momento.");
+            return;
+        }
         if (teamType.equalsIgnoreCase("Random")) {
             ChatUtil.msg(player, "&cLas invitaciones estan deshabilitadas en modo Random.");
             return;
@@ -105,8 +138,12 @@ public class TeamManager {
                 if (lTeam == null) {
                     lTeam = sb.registerNewTeam("team_" + leader.getName());
                     applyRandomTheme(lTeam);
+                    lTeam.setAllowFriendlyFire(plugin.getConfig().getBoolean("friendly-fire", false));
+                    player.sendTitle(ChatColor.GREEN + "¡Equipo Creado!", ChatColor.YELLOW + "Mucha suerte", 10, 70, 20);
+                    player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
                 }
                 lTeam.addEntry(leader.getName());
+                updatePlayerDatapackID(leader.getName(), lTeam);
             }
 
             if (lTeam.getSize() >= teamSize) {
@@ -116,7 +153,6 @@ public class TeamManager {
 
             lTeam.addEntry(player.getName());
             updatePlayerDatapackID(player.getName(), lTeam);
-            updatePlayerDatapackID(leader.getName(), lTeam);
             pendingInvites.remove(player.getUniqueId());
 
             ChatUtil.broadcast("&b" + player.getName() + " &ase ha unido al equipo de &b" + leader.getName());
@@ -124,9 +160,13 @@ public class TeamManager {
             ChatUtil.msg(player, "&cNo tienes invitaciones de este jugador.");
         }
     }
-
     public void leaveTeam(Player player) {
         Team t = sb.getEntryTeam(player.getName());
+        if (teamsLocked) {
+            ChatUtil.msg(player, "&cLa creación y modificación de equipos está bloqueada.");
+            return;
+        }
+
         if (t != null) {
             t.removeEntry(player.getName());
             updatePlayerDatapackID(player.getName(), null);
@@ -230,6 +270,23 @@ public class TeamManager {
         ChatUtil.msg(sender, "&aIcono establecido a: " + colorCode + "[" + iconText + "]");
     }
 
+    public void reloadConfigValues() {
+        plugin.reloadConfig();
+
+        this.teamSize = plugin.getConfig().getInt("max-team-size", 1);
+        this.teamType = plugin.getConfig().getString("team-type", "Choosen");
+
+        List<String> iconsConfig = plugin.getConfig().getStringList("team-icons");
+        this.availableIcons.clear();
+
+        if (iconsConfig.isEmpty()) {
+            this.availableIcons.addAll(Arrays.asList("#1", "#2", "⚔", "★"));
+        } else {
+            this.availableIcons.addAll(iconsConfig);
+        }
+    }
+
+
     public void forceJoin(CommandSender sender, Player p1, Player p2) {
         Team t2 = sb.getEntryTeam(p2.getName());
         if (t2 == null) {
@@ -237,24 +294,27 @@ public class TeamManager {
             if (t2 == null) {
                 t2 = sb.registerNewTeam("team_" + p2.getName());
                 applyRandomTheme(t2);
+                //friendly fire esto coso
+                t2.setAllowFriendlyFire(plugin.getConfig().getBoolean("friendly-fire", false));
             }
             t2.addEntry(p2.getName());
-            updatePlayerDatapackID(p1.getName(), t2);
             updatePlayerDatapackID(p2.getName(), t2);
         }
 
         Team t1 = sb.getEntryTeam(p1.getName());
         if (t1 != null) {
             t1.removeEntry(p1.getName());
+            updatePlayerDatapackID(p1.getName(), null);
             if (t1.getSize() == 0) t1.unregister();
         }
 
         t2.addEntry(p1.getName());
+        updatePlayerDatapackID(p1.getName(), t2);
+
         ChatUtil.msg(p1, "&aUn admin te forzo al equipo de &b" + p2.getName());
         ChatUtil.msg(p2, "&b" + p1.getName() + " &aha sido forzado a tu equipo.");
         ChatUtil.msg(sender, "&aJugador movido con exito.");
     }
-
     public void removePlayer(CommandSender sender, Player target) {
         Team team = sb.getEntryTeam(target.getName());
         if (team != null) {

@@ -2,7 +2,6 @@ package me.VoidTeams.listeners;
 
 import me.VoidTeams.VoidTeams;
 import me.VoidTeams.utils.ChatUtil;
-import net.kyori.adventure.audience.Audience;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,7 +19,11 @@ public class TeamChatListener implements Listener {
 
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
-        if (!plugin.getConfig().getBoolean("allow-team-chat", true)) return;
+        if (plugin.getTeamManager().isChatLocked()) {
+            event.setCancelled(true);
+            ChatUtil.msg(event.getPlayer(), "&cEl chat de equipo está bloqueado actualmente.");
+            return;
+        }
 
         Player player = event.getPlayer();
 
