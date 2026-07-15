@@ -8,7 +8,6 @@ Users:
 > Invite: provides invitations and autocreation of a team
 > Leave: Leaves your team
 > Color: Changes the color of your team
-> Icon: Changes the number of your team
 > accept: accepts the invitation
 > With /teamadmin /ta
 Admins:
