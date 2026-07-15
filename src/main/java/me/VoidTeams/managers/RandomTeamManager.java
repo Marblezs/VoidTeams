@@ -3,7 +3,6 @@ package me.VoidTeams.managers;
 import me.VoidTeams.VoidTeams;
 import me.VoidTeams.utils.ChatUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
@@ -36,13 +35,15 @@ public class RandomTeamManager {
 
         for (Player p : players) {
             if (currentTeam == null || currentCount >= teamSize) {
-                currentTeam = sb.registerNewTeam("uhc_rand_" + teamIndex);
-                currentTeam.setPrefix(ChatColor.WHITE + "[#" + teamIndex + "] ");
+                currentTeam = sb.registerNewTeam("team_rand_" + teamIndex);
+                plugin.getTeamManager().applyRandomTheme(currentTeam);
                 teamIndex++;
                 currentCount = 0;
             }
             currentTeam.addEntry(p.getName());
+            plugin.getTeamManager().updatePlayerDatapackID(p.getName(), currentTeam);
             currentCount++;
+
             ChatUtil.msg(sender,"&aHas sido asignado aleatoriamente a un equipo.");
         }
 
@@ -72,8 +73,10 @@ public class RandomTeamManager {
             boolean added = false;
 
             for (Team t : sb.getTeams()) {
-                if (t.getName().startsWith("uhc_") && t.getSize() < teamSize) {
+                // Actualizado a "team_"
+                if (t.getName().startsWith("team_") && t.getSize() < teamSize) {
                     t.addEntry(p.getName());
+                    plugin.getTeamManager().updatePlayerDatapackID(p.getName(), t);
                     ChatUtil.msg(p, "&aHas sido asignado a un equipo por un administrador.");
                     added = true;
                     break;
@@ -81,9 +84,11 @@ public class RandomTeamManager {
             }
 
             if (!added) {
-                Team newTeam = sb.registerNewTeam("uhc_" + System.currentTimeMillis() % 10000);
-                newTeam.setPrefix(ChatColor.WHITE + "[#New] ");
+                // Actualizado a "team_"
+                Team newTeam = sb.registerNewTeam("team_" + (System.currentTimeMillis() % 10000));
+                plugin.getTeamManager().applyRandomTheme(newTeam);
                 newTeam.addEntry(p.getName());
+                plugin.getTeamManager().updatePlayerDatapackID(p.getName(), newTeam);
                 ChatUtil.msg(p, "&aSe te ha asignado a un nuevo equipo.");
             }
         }

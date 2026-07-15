@@ -9,7 +9,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
@@ -22,13 +24,36 @@ public class TeamManager {
 
     private String teamType;
     private int teamSize;
+    //scoreboard discreto para radicate
+    private final org.bukkit.scoreboard.Objective datapackObj;
+    private int nextTeamId = 1;
+    private final Map<String, Integer> teamIdMap = new HashMap<>();
+
+    private final ChatColor[] availableColors = {
+            ChatColor.RED, ChatColor.BLUE, ChatColor.GREEN, ChatColor.YELLOW,
+            ChatColor.AQUA, ChatColor.GOLD, ChatColor.LIGHT_PURPLE
+    };
+    private final List<String> availableIcons;
 
     public TeamManager(VoidTeams plugin) {
         this.plugin = plugin;
         this.sb = Bukkit.getScoreboardManager().getMainScoreboard();
+        //datapack
+        org.bukkit.scoreboard.Objective obj = sb.getObjective("vt_team_id");
+        if (obj == null) {
+            obj = sb.registerNewObjective("vt_team_id", "dummy", "Team ID");
+        }
+        this.datapackObj = obj;
 
         this.teamSize = plugin.getConfig().getInt("max-team-size", 2);
         this.teamType = plugin.getConfig().getString("team-type", "Choosen");
+
+        List<String> iconsConfig = plugin.getConfig().getStringList("team-icons");
+        if (iconsConfig.isEmpty()) {
+            this.availableIcons = Arrays.asList("asd", "icon", "⚔", "★");
+        } else {
+            this.availableIcons = iconsConfig;
+        }
     }
 
     public int getTeamSize() { return teamSize; }
@@ -43,8 +68,8 @@ public class TeamManager {
             plugin.getConfig().set("max-team-size", size);
             plugin.saveConfig();
 
-            ChatUtil.msg(sender, "&aModo actualizado: &e" + type + " &ade tamaño &e" + size);
-            ChatUtil.broadcast("&aEl administrador ha configurado los equipos como: &e" + type + " &ade tamaño &e" + size);
+            ChatUtil.msg(sender, "&aModo actualizado: &e" + type + " &ade tamanio &e" + size);
+            ChatUtil.broadcast("&aEl administrador ha configurado los equipos como: &e" + type + " &ade tamanio &e" + size);
         } else {
             ChatUtil.msg(sender, "&cEl tipo debe ser 'Choosen' o 'Random'.");
         }
@@ -76,10 +101,10 @@ public class TeamManager {
         if (pendingInvites.containsKey(player.getUniqueId()) && pendingInvites.get(player.getUniqueId()).equals(leader.getUniqueId())) {
             Team lTeam = sb.getEntryTeam(leader.getName());
             if (lTeam == null) {
-                lTeam = sb.getTeam("uhc_" + leader.getName());
+                lTeam = sb.getTeam("team_" + leader.getName());
                 if (lTeam == null) {
-                    lTeam = sb.registerNewTeam("uhc_" + leader.getName());
-                    lTeam.setPrefix(ChatColor.WHITE + "[#1] ");
+                    lTeam = sb.registerNewTeam("team_" + leader.getName());
+                    applyRandomTheme(lTeam);
                 }
                 lTeam.addEntry(leader.getName());
             }
@@ -90,6 +115,8 @@ public class TeamManager {
             }
 
             lTeam.addEntry(player.getName());
+            updatePlayerDatapackID(player.getName(), lTeam);
+            updatePlayerDatapackID(leader.getName(), lTeam);
             pendingInvites.remove(player.getUniqueId());
 
             ChatUtil.broadcast("&b" + player.getName() + " &ase ha unido al equipo de &b" + leader.getName());
@@ -102,12 +129,13 @@ public class TeamManager {
         Team t = sb.getEntryTeam(player.getName());
         if (t != null) {
             t.removeEntry(player.getName());
+            updatePlayerDatapackID(player.getName(), null);
             ChatUtil.msg(player, "&aHas salido de tu equipo.");
             if (t.getSize() == 0) t.unregister();
 
             if (plugin.getTeamsData().isChatToggled(player.getUniqueId())) {
                 plugin.getTeamsData().toggleChat(player.getUniqueId());
-                ChatUtil.msg(player, "&eTu chat de equipo se ha desactivado automáticamente.");
+                ChatUtil.msg(player, "&eTu chat de equipo se ha desactivado automaticamente.");
             }
         } else {
             ChatUtil.msg(player, "&cNo estas en ningun equipo.");
@@ -121,8 +149,7 @@ public class TeamManager {
             return;
         }
 
-        ChatColor[] colores = { ChatColor.RED, ChatColor.BLUE, ChatColor.GREEN, ChatColor.YELLOW, ChatColor.AQUA, ChatColor.GOLD, ChatColor.LIGHT_PURPLE };
-        ChatColor randomColor = colores[new Random().nextInt(colores.length)];
+        ChatColor randomColor = availableColors[new Random().nextInt(availableColors.length)];
 
         try { team.setColor(randomColor); } catch (NoSuchMethodError ignored) {}
 
@@ -136,29 +163,37 @@ public class TeamManager {
         ChatUtil.msg(sender, "&aColor actualizado a: " + randomColor + randomColor.name());
     }
 
-    public void setRandomIcon(CommandSender sender, Player target) {
-        Team team = sb.getEntryTeam(target.getName());
-        if (team == null) {
-            ChatUtil.msg(sender, "&cEse jugador no esta en ningun equipo.");
-            return;
+    public void applyRandomTheme(Team team) {
+        Random random = new Random();
+        ChatColor randomColor = availableColors[random.nextInt(availableColors.length)];
+        String prefixIcon;
+
+        boolean useCustomIcons = plugin.getConfig().getBoolean("use-custom-icons", false);
+
+        if (useCustomIcons && !availableIcons.isEmpty()) {
+            prefixIcon = availableIcons.get(random.nextInt(availableIcons.size()));
+        } else {
+            prefixIcon = "#" + (random.nextInt(99) + 1);
         }
-
-        String randomIcon = "#" + (new Random().nextInt(99) + 1);
-        String oldPrefix = team.getPrefix();
-        String colorString = ChatColor.WHITE.toString();
-
-        if (oldPrefix != null && oldPrefix.length() >= 2 && oldPrefix.startsWith("§")) {
-            colorString = oldPrefix.substring(0, 2);
-        }
-
-        team.setPrefix(colorString + "[" + randomIcon + "] " + ChatColor.RESET);
-        ChatUtil.msg(sender, "&aIcono actualizado a: " + colorString + randomIcon);
+        try { team.setColor(randomColor); } catch (NoSuchMethodError ignored) {}
+        team.setPrefix(randomColor + "[" + prefixIcon + "] " + ChatColor.RESET);
     }
-    
+
+    public void updatePlayerDatapackID(String playerName, Team team) {
+        if (team == null) {
+            datapackObj.getScore(playerName).setScore(0);
+        } else {
+            if (!teamIdMap.containsKey(team.getName())) {
+                teamIdMap.put(team.getName(), nextTeamId++);
+            }
+            datapackObj.getScore(playerName).setScore(teamIdMap.get(team.getName()));
+        }
+    }
+
     public void setTeamColor(CommandSender sender, Player target, String colorName) {
         Team team = sb.getEntryTeam(target.getName());
         if (team == null) {
-            ChatUtil.msg(sender, "&cEse jugador no está en un equipo.");
+            ChatUtil.msg(sender, "&cEse jugador no esta en un equipo.");
             return;
         }
 
@@ -174,14 +209,14 @@ public class TeamManager {
             team.setPrefix(newColor + icon + " ");
             ChatUtil.msg(sender, "&aColor establecido a " + newColor + colorName);
         } catch (IllegalArgumentException e) {
-            ChatUtil.msg(sender, "&cColor inválido. Usa nombres estándar (RED, BLUE, GOLD, etc).");
+            ChatUtil.msg(sender, "&cColor invalido. Usa nombres estandar (RED, BLUE, GOLD, etc).");
         }
     }
 
     public void setTeamIcon(CommandSender sender, Player target, String iconText) {
         Team team = sb.getEntryTeam(target.getName());
         if (team == null) {
-            ChatUtil.msg(sender, "&cEse jugador no está en un equipo.");
+            ChatUtil.msg(sender, "&cEse jugador no esta en un equipo.");
             return;
         }
 
@@ -195,13 +230,17 @@ public class TeamManager {
         ChatUtil.msg(sender, "&aIcono establecido a: " + colorCode + "[" + iconText + "]");
     }
 
-
     public void forceJoin(CommandSender sender, Player p1, Player p2) {
         Team t2 = sb.getEntryTeam(p2.getName());
         if (t2 == null) {
-            t2 = sb.getTeam("uhc_" + p2.getName());
-            if (t2 == null) t2 = sb.registerNewTeam("uhc_" + p2.getName());
+            t2 = sb.getTeam("team_" + p2.getName());
+            if (t2 == null) {
+                t2 = sb.registerNewTeam("team_" + p2.getName());
+                applyRandomTheme(t2);
+            }
             t2.addEntry(p2.getName());
+            updatePlayerDatapackID(p1.getName(), t2);
+            updatePlayerDatapackID(p2.getName(), t2);
         }
 
         Team t1 = sb.getEntryTeam(p1.getName());
@@ -220,6 +259,7 @@ public class TeamManager {
         Team team = sb.getEntryTeam(target.getName());
         if (team != null) {
             team.removeEntry(target.getName());
+            updatePlayerDatapackID(target.getName(), null);
             ChatUtil.msg(target, "&cUn administrador te ha expulsado de tu equipo.");
             ChatUtil.msg(sender, "&aHas sacado a &b" + target.getName() + " &ade su equipo.");
             if (team.getSize() == 0) team.unregister();
@@ -240,6 +280,7 @@ public class TeamManager {
                 if (member != null && plugin.getTeamsData().isChatToggled(member.getUniqueId())) {
                     plugin.getTeamsData().toggleChat(member.getUniqueId());
                 }
+                updatePlayerDatapackID(entry, null);
             }
             team.unregister();
             ChatUtil.msg(sender, "&aEquipo disuelto.");
@@ -250,14 +291,16 @@ public class TeamManager {
 
     public void clearAllTeamsConsole() {
         for (Team t : sb.getTeams()) {
-            if (t.getName().startsWith("uhc_")) {
+            if (t.getName().startsWith("team_")) {
                 t.unregister();
             }
         }
+        teamIdMap.clear();
+        nextTeamId = 1;
     }
 
     public void clearAllTeams(CommandSender sender) {
         clearAllTeamsConsole();
-        ChatUtil.msg(sender, "&aSe han eliminado todos los equipos.");
+        ChatUtil.broadcast("&aSe han eliminado todos los equipos.");
     }
 }

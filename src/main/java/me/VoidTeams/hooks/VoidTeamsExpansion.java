@@ -34,9 +34,9 @@ public class VoidTeamsExpansion extends PlaceholderExpansion {
         if (params.equalsIgnoreCase("team")) {
             Team team = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(player.getName());
             if (team != null) {
-                return team.getPrefix() + player.getName();
+                return team.getPrefix();
             }
-            return "&7" + player.getName();
+            return "&7";
         }
 
         // %voidteams_type%

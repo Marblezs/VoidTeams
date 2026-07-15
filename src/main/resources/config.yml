@@ -11,3 +11,14 @@ team-type: "Choosen"
 
 # Permitir a los jugadores usar el chat privado de su equipo (Usando /team chat)"
 allow-team-chat: true
+
+# true = usa los iconos de la lista (ej: ⚔, ★)
+# false = usa un numeral aleatorio (ej: #1, #45, #99)
+use-custom-icons: false
+
+# Lista de iconos (solo se usa si use-custom-icons está en true)
+team-icons:
+  - "⚔"
+  - "☠"
+  - "★"
+  - "UHC"

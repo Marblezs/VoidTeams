@@ -7,7 +7,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public class ChatUtil {
 
-    private static final String PREFIX = ChatColor.WHITE + "[" + ChatColor.BLUE + "VoidTeams" + ChatColor.WHITE + "] ";
+    private static final String PREFIX = ChatColor.WHITE + "[" + ChatColor.AQUA + "VoidTeams" + ChatColor.WHITE + "] ";
 
     public static void msg(Audience recipient, String message) {
         if (recipient == null) return;
