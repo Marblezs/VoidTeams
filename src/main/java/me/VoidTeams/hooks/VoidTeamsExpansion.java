@@ -2,6 +2,7 @@ package me.VoidTeams.hooks;
 
 import me.VoidTeams.VoidTeams;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.scoreboard.Team;
 
@@ -17,7 +18,7 @@ public class VoidTeamsExpansion extends PlaceholderExpansion {
     public String getIdentifier() { return "voidteams"; }
 
     @Override
-    public String getAuthor() { return "TuNombre"; }
+    public String getAuthor() { return "MarcyWu"; }
 
     @Override
     public String getVersion() { return "1.0"; }
@@ -31,8 +32,11 @@ public class VoidTeamsExpansion extends PlaceholderExpansion {
 
         // %voidteams_team%
         if (params.equalsIgnoreCase("team")) {
-            Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().getEntryTeam(player.getName());
-            return (team != null) ? team.getName().replace("uhc_", "") : "Ninguno";
+            Team team = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(player.getName());
+            if (team != null) {
+                return team.getPrefix() + player.getName();
+            }
+            return "&7" + player.getName();
         }
 
         // %voidteams_type%

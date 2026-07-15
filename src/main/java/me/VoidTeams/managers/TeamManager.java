@@ -154,6 +154,47 @@ public class TeamManager {
         team.setPrefix(colorString + "[" + randomIcon + "] " + ChatColor.RESET);
         ChatUtil.msg(sender, "&aIcono actualizado a: " + colorString + randomIcon);
     }
+    
+    public void setTeamColor(CommandSender sender, Player target, String colorName) {
+        Team team = sb.getEntryTeam(target.getName());
+        if (team == null) {
+            ChatUtil.msg(sender, "&cEse jugador no está en un equipo.");
+            return;
+        }
+
+        try {
+            ChatColor newColor = ChatColor.valueOf(colorName.toUpperCase());
+            String oldPrefix = team.getPrefix();
+
+            String icon = "[#1]"; // Default
+            if (oldPrefix != null && oldPrefix.contains("[") && oldPrefix.contains("]")) {
+                icon = oldPrefix.substring(oldPrefix.indexOf("["), oldPrefix.indexOf("]") + 1);
+            }
+
+            team.setPrefix(newColor + icon + " ");
+            ChatUtil.msg(sender, "&aColor establecido a " + newColor + colorName);
+        } catch (IllegalArgumentException e) {
+            ChatUtil.msg(sender, "&cColor inválido. Usa nombres estándar (RED, BLUE, GOLD, etc).");
+        }
+    }
+
+    public void setTeamIcon(CommandSender sender, Player target, String iconText) {
+        Team team = sb.getEntryTeam(target.getName());
+        if (team == null) {
+            ChatUtil.msg(sender, "&cEse jugador no está en un equipo.");
+            return;
+        }
+
+        String oldPrefix = team.getPrefix();
+        String colorCode = "&f";
+        if (oldPrefix != null && oldPrefix.length() >= 2) {
+            colorCode = oldPrefix.substring(0, 2);
+        }
+
+        team.setPrefix(colorCode + "[" + iconText + "] ");
+        ChatUtil.msg(sender, "&aIcono establecido a: " + colorCode + "[" + iconText + "]");
+    }
+
 
     public void forceJoin(CommandSender sender, Player p1, Player p2) {
         Team t2 = sb.getEntryTeam(p2.getName());

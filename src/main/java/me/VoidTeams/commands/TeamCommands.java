@@ -3,7 +3,6 @@ package me.VoidTeams.commands;
 import me.VoidTeams.VoidTeams;
 import me.VoidTeams.utils.ChatUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -30,7 +29,13 @@ public class TeamCommands implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            ChatUtil.msg(sender, "&cUsa: /team <invite|accept|leave|color|icon>");
+            ChatUtil.msg(sender, "&8&m--------------------------------");
+            ChatUtil.msg(sender, "&f/team color &7- Asigna un color rapido al equipo");
+            ChatUtil.msg(sender, "&f/team invite <jugador> &7- Invita a alguien.");
+            ChatUtil.msg(sender, "&f/team accept <jugador> &7- Acepta una invitacion.");
+            ChatUtil.msg(sender, "&f/team leave &7- Sal de tu equipo actual.");
+            ChatUtil.msg(sender, "&f/team chat &7- Chat del equipo");
+            ChatUtil.msg(sender, "&8&m--------------------------------");
             return true;
         }
 
@@ -51,7 +56,6 @@ public class TeamCommands implements CommandExecutor {
             }
             case "leave" -> plugin.getTeamManager().leaveTeam(player);
             case "color" -> plugin.getTeamManager().setRandomColor(player, player);
-            case "icon", "icono" -> plugin.getTeamManager().setRandomIcon(player, player);
             case "chat" -> {
                 plugin.getTeamsData().toggleChat(player.getUniqueId());
                 boolean enabled = plugin.getTeamsData().isChatToggled(player.getUniqueId());

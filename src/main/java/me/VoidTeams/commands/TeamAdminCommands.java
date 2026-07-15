@@ -2,6 +2,7 @@ package me.VoidTeams.commands;
 
 import me.VoidTeams.VoidTeams;
 import me.VoidTeams.utils.ChatUtil;
+import net.kyori.adventure.platform.facet.Facet;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -24,7 +25,14 @@ public class TeamAdminCommands implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            ChatUtil.msg(sender, "&cUso: /teamadmin <force|clear|disband|color|icon|remove|type>");
+            ChatUtil.msg(sender, "&8&m--------------------------------");
+            ChatUtil.msg(sender, "&f/teamadm color <jugador> &7- Asigna un color al equipo");
+            ChatUtil.msg(sender, "&f/teamadm remove <jugador> &7- Remueve a alguien del equipo");
+            ChatUtil.msg(sender, "&f/teamadm disband <jugador> &7- Remueve el equipo completo.");
+            ChatUtil.msg(sender, "&f/teamadm leave &7- Elimina todos los equipos.");
+            ChatUtil.msg(sender, "&f/teamadm leave &7- Elimina todos los equipos.");
+            ChatUtil.msg(sender, "&f/teamadm shuffle &7- Realiza aleatoriedad en los equipos");
+            ChatUtil.msg(sender, "&8&m--------------------------------");
             return true;
         }
 
@@ -51,14 +59,30 @@ public class TeamAdminCommands implements CommandExecutor {
                 plugin.getTeamManager().disbandTeam(sender, target);
             }
             case "color" -> {
-                if (args.length < 2) return true;
+                if (args.length < 3) {
+                    ChatUtil.msg(sender, "&cUso: /teamadmin color <jugador> <color>");
+                    return true;
+                }
                 Player target = Bukkit.getPlayer(args[1]);
-                if (target != null) plugin.getTeamManager().setRandomColor(sender, target);
+                String colorName = args[2];
+                if (target != null) {
+                    plugin.getTeamManager().setTeamColor(sender, target, colorName);
+                } else {
+                    ChatUtil.msg(sender, "&cJugador no encontrado.");
+                }
             }
             case "icon", "icono" -> {
-                if (args.length < 2) return true;
+                if (args.length < 3) {
+                    ChatUtil.msg(sender, "&cUso: /teamadmin icono <jugador> <texto>");
+                    return true;
+                }
                 Player target = Bukkit.getPlayer(args[1]);
-                if (target != null) plugin.getTeamManager().setRandomIcon(sender, target);
+                String iconText = args[2];
+                if (target != null) {
+                    plugin.getTeamManager().setTeamIcon(sender, target, iconText);
+                } else {
+                    ChatUtil.msg(sender, "&cJugador no encontrado.");
+                }
             }
             case "shuffle" -> {
                 String currentType = plugin.getTeamManager().getTeamType();
