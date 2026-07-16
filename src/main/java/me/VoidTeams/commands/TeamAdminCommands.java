@@ -4,6 +4,7 @@ import me.VoidTeams.VoidTeams;
 import me.VoidTeams.utils.ChatUtil;
 import net.kyori.adventure.platform.facet.Facet;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -119,7 +120,7 @@ public class TeamAdminCommands implements CommandExecutor {
             }
             case "block" -> {
                 if (args.length < 2) {
-                    ChatUtil.msg(sender, "&cUso: /teamadmin block <all|chat|teams|none>");
+                    ChatUtil.msg(sender, "&cUso: /teamadmin block <all, chat, teams, none>");
                     return true;
                 }
                 String target = args[1].toLowerCase();
@@ -127,27 +128,39 @@ public class TeamAdminCommands implements CommandExecutor {
                     case "all" -> {
                         plugin.getTeamManager().setTeamsLocked(true);
                         plugin.getTeamManager().setChatLocked(true);
-                        ChatUtil.broadcast("&cTodo el sistema de equipos y chat ha sido bloqueado por la administración.");
+                        ChatUtil.broadcast("&cTodo el sistema de equipos y chat ha sido bloqueado por la administracion.");
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
+                        }
                     }
                     case "chat" -> {
                         plugin.getTeamManager().setChatLocked(true);
                         ChatUtil.broadcast("&cEl chat de equipo ha sido bloqueado.");
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
+                        }
                     }
                     case "teams" -> {
                         plugin.getTeamManager().setTeamsLocked(true);
-                        ChatUtil.broadcast("&cLa creación y modificación de equipos ha sido bloqueada.");
+                        ChatUtil.broadcast("&cLa creacion y modificacion de equipos ha sido bloqueada.");
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
+                        }
                     }
                     case "none" -> {
                         plugin.getTeamManager().setTeamsLocked(false);
                         plugin.getTeamManager().setChatLocked(false);
                         ChatUtil.broadcast("&aEl sistema de equipos y chat ha sido desbloqueado.");
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_IRON_XYLOPHONE, 1.0f, 1.0f);
+                        }
                     }
-                    default -> ChatUtil.msg(sender, "&cOpción inválida. Usa: all, chat, teams, none.");
+                    default -> ChatUtil.msg(sender, "&cOpcion invalida. Usa: all, chat, teams, none.");
                 }
             }
             case "reload" -> {
                 plugin.getTeamManager().reloadConfigValues();
-                ChatUtil.msg(sender, "&aConfiguración de VoidTeams recargada correctamente.");
+                ChatUtil.msg(sender, "&aConfiguracion de VoidTeams recargada correctamente.");
             }
 
             default -> ChatUtil.msg(sender, "&cComando desconocido.");

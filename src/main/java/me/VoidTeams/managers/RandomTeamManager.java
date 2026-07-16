@@ -3,6 +3,7 @@ package me.VoidTeams.managers;
 import me.VoidTeams.VoidTeams;
 import me.VoidTeams.utils.ChatUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
@@ -49,6 +50,9 @@ public class RandomTeamManager {
 
         ChatUtil.msg(sender, "&eTodos los jugadores han sido aleatorizados en equipos de " + teamSize + ".");
         ChatUtil.broadcast("&a¡Los equipos han sido aleatorizados!");
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 1.0f);
+        }
     }
 
     public void shuffleForcingTeams(CommandSender sender) {
@@ -94,6 +98,9 @@ public class RandomTeamManager {
         }
 
         ChatUtil.msg(sender, "&aSe han aleatorizado y asignado " + unteamedPlayers.size() + " jugadores a equipos.");
-        ChatUtil.broadcast("&aLos jugadores sin equipo han sido asignados.");
+        ChatUtil.broadcast("&aLos jugadores sin equipo han sido asignados y se aleatorizaron.");
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1.0f, 1.0f);
+        }
     }
 }

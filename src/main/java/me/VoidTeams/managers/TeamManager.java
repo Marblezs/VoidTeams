@@ -4,6 +4,7 @@ import me.VoidTeams.VoidTeams;
 import me.VoidTeams.utils.ChatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
@@ -87,6 +88,9 @@ public class TeamManager {
 
             ChatUtil.msg(sender, "&aModo actualizado: &e" + type + " &ade tamanio &e" + size);
             ChatUtil.broadcast("&aEl administrador ha configurado los equipos como: &e" + type + " &ade tamanio &e" + size);
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                p.playSound(p.getLocation(), Sound.ITEM_GOAT_HORN_SOUND_0, 1.0f, 1.0f);
+            }
         } else {
             ChatUtil.msg(sender, "&cEl tipo debe ser 'Choosen' o 'Random'.");
         }
@@ -95,27 +99,32 @@ public class TeamManager {
     public void invitePlayer(Player inviter, Player target) {
         if (teamType.equalsIgnoreCase("Random")) {
             ChatUtil.msg(inviter, "&cNo puedes invitar jugadores en el modo Random.");
+            inviter.playSound(inviter.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
             return;
 
         }
         if (teamsLocked) {
             ChatUtil.msg(inviter, "&cLa creación y modificación de equipos está bloqueada.");
+            inviter.playSound(inviter.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
 
         Team myTeam = sb.getEntryTeam(inviter.getName());
         if (myTeam != null && myTeam.getSize() >= teamSize) {
             ChatUtil.msg(inviter, "&cTu equipo ya esta lleno (Max: " + teamSize + ").");
+            inviter.playSound(inviter.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
 
         pendingInvites.put(target.getUniqueId(), inviter.getUniqueId());
         ChatUtil.msg(inviter, "&aInvitacion enviada a &b" + target.getName());
+        inviter.playSound(inviter.getLocation(), Sound.ENTITY_ARROW_SHOOT, 1.0f, 1.0f);
         TextComponent msg = new TextComponent(ChatColor.translateAlternateColorCodes('&', "&b" + inviter.getName() + " &ate ha invitado a su equipo. "));
         TextComponent click = new TextComponent(ChatColor.translateAlternateColorCodes('&', "&e&l[HAZ CLICK AQUI PARA ACEPTAR]"));
 
         click.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/team accept " + inviter.getName()));
         click.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GREEN + "Click para unirte al equipo de " + inviter.getName()).create()));
+        target.playSound(target.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, 1.0f, 1.0f);
 
         msg.addExtra(click);
         target.spigot().sendMessage(msg);
@@ -124,46 +133,55 @@ public class TeamManager {
     public void acceptInvite(Player player, Player leader) {
         if (teamsLocked) {
             ChatUtil.msg(player, "&cNo puedes unirte a equipos en este momento.");
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
         if (teamType.equalsIgnoreCase("Random")) {
             ChatUtil.msg(player, "&cLas invitaciones estan deshabilitadas en modo Random.");
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
 
         if (pendingInvites.containsKey(player.getUniqueId()) && pendingInvites.get(player.getUniqueId()).equals(leader.getUniqueId())) {
             Team lTeam = sb.getEntryTeam(leader.getName());
+            //crear equipo
             if (lTeam == null) {
                 lTeam = sb.getTeam("team_" + leader.getName());
                 if (lTeam == null) {
                     lTeam = sb.registerNewTeam("team_" + leader.getName());
                     applyRandomTheme(lTeam);
                     lTeam.setAllowFriendlyFire(plugin.getConfig().getBoolean("friendly-fire", false));
-                    player.sendTitle(ChatColor.GREEN + "¡Equipo Creado!", ChatColor.YELLOW + "Mucha suerte", 10, 70, 20);
-                    player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+                    player.sendTitle(ChatColor.GREEN + "Equipo Creado", ChatColor.YELLOW + "", 10, 70, 20);
+                    player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
                 }
                 lTeam.addEntry(leader.getName());
                 updatePlayerDatapackID(leader.getName(), lTeam);
             }
-
+            // negacion de equipo
             if (lTeam.getSize() >= teamSize) {
                 ChatUtil.msg(player, "&cEse equipo ya alcanzo el limite de " + teamSize + ".");
+                player.sendTitle(ChatColor.RED + "Error", ChatColor.YELLOW + "", 10, 70, 20);
+                player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
                 return;
             }
-
+            // unirse a equipo
             lTeam.addEntry(player.getName());
             updatePlayerDatapackID(player.getName(), lTeam);
             pendingInvites.remove(player.getUniqueId());
 
+            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
             ChatUtil.broadcast("&b" + player.getName() + " &ase ha unido al equipo de &b" + leader.getName());
         } else {
             ChatUtil.msg(player, "&cNo tienes invitaciones de este jugador.");
+            player.sendTitle(ChatColor.RED + "Error", ChatColor.YELLOW + "", 10, 70, 20);
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
         }
     }
     public void leaveTeam(Player player) {
         Team t = sb.getEntryTeam(player.getName());
         if (teamsLocked) {
             ChatUtil.msg(player, "&cLa creación y modificación de equipos está bloqueada.");
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
 
@@ -362,5 +380,8 @@ public class TeamManager {
     public void clearAllTeams(CommandSender sender) {
         clearAllTeamsConsole();
         ChatUtil.broadcast("&aSe han eliminado todos los equipos.");
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+        }
     }
 }
