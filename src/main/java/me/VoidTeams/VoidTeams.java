@@ -3,6 +3,7 @@ package me.VoidTeams;
 import me.VoidTeams.commands.TeamAdminCommands;
 import me.VoidTeams.commands.TeamCommands;
 import me.VoidTeams.commands.TeamTabCompleter;
+import me.VoidTeams.commands.VoteCommand;
 import me.VoidTeams.hooks.VoidTeamsExpansion;
 import me.VoidTeams.managers.RandomTeamManager;
 import me.VoidTeams.managers.VoteTeamManager;
@@ -16,7 +17,7 @@ public class VoidTeams extends JavaPlugin {
     private TeamManager teamManager;
     private RandomTeamManager randomTeamManager;
     private TeamsData teamsData;
-    private VoteTeamManager  voteTeamManager;
+    private VoteTeamManager voteTeamManager;
 
     @Override
     public void onEnable() {
@@ -33,13 +34,17 @@ public class VoidTeams extends JavaPlugin {
         getCommand("teamadmin").setExecutor(new TeamAdminCommands(this));
         getCommand("teamadmin").setTabCompleter(new TeamTabCompleter());
 
+        getCommand("vote").setExecutor(new VoteCommand(this)); // <-- Comando /vote añadido
+
         getServer().getPluginManager().registerEvents(new TeamChatListener(this), this);
 
         getLogger().info("=========================================");
         getLogger().info("       VoidTeams       Version:          ");
-        getLogger().info("      By: MarcyWu        V1.1            ");
+        getLogger().info("      By: MarcyWu        V1.4            ");
         getLogger().info("     Gracias por usar mi plugin          ");
         getLogger().info("=========================================");
+
+        // Registro de PlaceholderAPI
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new VoidTeamsExpansion(this).register();
             getLogger().info("PlaceholderAPI detectado, integrando placeholders.");
@@ -50,7 +55,7 @@ public class VoidTeams extends JavaPlugin {
     public void onDisable() {
         if (getConfig().getBoolean("clear-teams-on-stop", false)) {
             getTeamManager().clearAllTeamsConsole();
-            getLogger().info("Se han limpiado todos los equipos debido a la configuración de apagado.");
+            getLogger().info("Se han limpiado todos los equipos debido a la configuracion de apagado.");
         }
         saveConfig();
         getLogger().info("VoidTeams se fue al void correctamente :p");

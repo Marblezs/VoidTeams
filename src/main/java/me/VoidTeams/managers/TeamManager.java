@@ -3,6 +3,7 @@ package me.VoidTeams.managers;
 import me.VoidTeams.VoidTeams;
 import me.VoidTeams.utils.ChatUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -16,8 +17,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-// Colores HEX & RGB
-import net.md_5.bungee.api.ChatColor;
+// Componentes de Bungee solo para el evento click del chat
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -39,22 +39,22 @@ public class TeamManager {
     public void setTeamsLocked(boolean locked) { this.teamsLocked = locked; }
     public void setChatLocked(boolean locked) { this.chatLocked = locked; }
 
-    //scoreboard discreto para radicate
+    // scoreboard discreto para radicate
     private final org.bukkit.scoreboard.Objective datapackObj;
     private int nextTeamId = 1;
     private final Map<String, Integer> teamIdMap = new HashMap<>();
 
-    // Colores por defecto ahora en formato HEX
-    private final String[] availableHexColors = {
-            "#FF5555", "#5555FF", "#55FF55", "#FFFF55",
-            "#55FFFF", "#FFAA00", "#FF55FF", "FF31CC"
+    // Colores por defecto estándar de Bukkit
+    private final ChatColor[] availableColors = {
+            ChatColor.RED, ChatColor.BLUE, ChatColor.GREEN, ChatColor.YELLOW,
+            ChatColor.AQUA, ChatColor.GOLD, ChatColor.LIGHT_PURPLE, ChatColor.DARK_PURPLE
     };
     private final List<String> availableIcons;
 
     public TeamManager(VoidTeams plugin) {
         this.plugin = plugin;
         this.sb = Bukkit.getScoreboardManager().getMainScoreboard();
-        //datapack
+        // datapack
         org.bukkit.scoreboard.Objective obj = sb.getObjective("vt_team_id");
         if (obj == null) {
             obj = sb.registerNewObjective("vt_team_id", "dummy", "Team ID");
@@ -74,7 +74,6 @@ public class TeamManager {
 
     public int getTeamSize() { return teamSize; }
     public String getTeamType() { return teamType; }
-
 
     public void setTeamType(CommandSender sender, String type) {
         if (type.equalsIgnoreCase("Choosen") || type.equalsIgnoreCase("Random") || type.equalsIgnoreCase("Vote")) {
@@ -164,7 +163,7 @@ public class TeamManager {
 
         if (pendingInvites.containsKey(player.getUniqueId()) && pendingInvites.get(player.getUniqueId()).equals(leader.getUniqueId())) {
             Team lTeam = sb.getEntryTeam(leader.getName());
-            //crear equipo
+            // crear equipo
             if (lTeam == null) {
                 lTeam = sb.getTeam("team_" + leader.getName());
                 if (lTeam == null) {
@@ -224,7 +223,7 @@ public class TeamManager {
     }
 
     // ----------------------------------------------------
-    // MANEJO DE COLORES HEX E ICONOS
+    // MANEJO DE COLORES E ICONOS (BUKKIT CHATCOLOR)
     // ----------------------------------------------------
 
     public void setRandomColor(CommandSender sender, Player target) {
@@ -234,8 +233,7 @@ public class TeamManager {
             return;
         }
 
-        String randomHex = availableHexColors[new Random().nextInt(availableHexColors.length)];
-        ChatColor randomColor = ChatColor.of(randomHex);
+        ChatColor randomColor = availableColors[new Random().nextInt(availableColors.length)];
 
         String oldPrefix = team.getPrefix();
         String currentIcon = "#1";
@@ -244,13 +242,12 @@ public class TeamManager {
         }
 
         team.setPrefix(randomColor + "[" + currentIcon + "] " + ChatColor.RESET);
-        ChatUtil.msg(sender, "&aColor actualizado a: " + randomColor + randomHex);
+        ChatUtil.msg(sender, "&aColor actualizado a: " + randomColor + randomColor.name());
     }
 
     public void applyRandomTheme(Team team) {
         Random random = new Random();
-        String randomHex = availableHexColors[random.nextInt(availableHexColors.length)];
-        ChatColor randomColor = ChatColor.of(randomHex);
+        ChatColor randomColor = availableColors[random.nextInt(availableColors.length)];
 
         String prefixIcon;
         boolean useCustomIcons = plugin.getConfig().getBoolean("use-custom-icons", false);
@@ -272,7 +269,7 @@ public class TeamManager {
         }
 
         try {
-            ChatColor newColor = ChatColor.of(colorName);
+            ChatColor newColor = ChatColor.valueOf(colorName.toUpperCase());
             String oldPrefix = team.getPrefix();
 
             String icon = "[#1]";
@@ -280,10 +277,10 @@ public class TeamManager {
                 icon = oldPrefix.substring(oldPrefix.indexOf("["), oldPrefix.indexOf("]") + 1);
             }
 
-            team.setPrefix(newColor + icon + " ");
-            ChatUtil.msg(sender, "&aColor establecido a: " + newColor + colorName);
+            team.setPrefix(newColor + icon + " " + ChatColor.RESET);
+            ChatUtil.msg(sender, "&aColor establecido a: " + newColor + newColor.name());
         } catch (IllegalArgumentException e) {
-            ChatUtil.msg(sender, "&cColor invalido. Usa codigo HEX (Ej: #FF5555).");
+            ChatUtil.msg(sender, "&cColor invalido. Usa nombres validos (Ej: RED, BLUE, GREEN, YELLOW).");
         }
     }
 
@@ -295,12 +292,13 @@ public class TeamManager {
         }
 
         String oldPrefix = team.getPrefix();
-        String colorCode = "&f";
+        String colorCode = ChatColor.WHITE.toString();
+
         if (oldPrefix != null && oldPrefix.contains("[")) {
             colorCode = oldPrefix.substring(0, oldPrefix.indexOf("["));
         }
 
-        team.setPrefix(colorCode + "[" + iconText + "] ");
+        team.setPrefix(colorCode + "[" + iconText + "] " + ChatColor.RESET);
         ChatUtil.msg(sender, "&aIcono establecido a: " + colorCode + "[" + iconText + "]");
     }
 
