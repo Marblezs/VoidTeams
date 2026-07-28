@@ -16,4 +16,7 @@ public class ChatUtil {
     public static void broadcast(String message) {
         Bukkit.broadcastMessage(PREFIX + ChatColor.translateAlternateColorCodes('&', message));
     }
+    public static void broadcastNoPrefix(String message) {
+        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', message));
+    }
 }

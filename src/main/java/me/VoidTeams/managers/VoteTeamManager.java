@@ -31,18 +31,18 @@ public class VoteTeamManager {
         this.currentOptions = new ArrayList<>(options);
         this.playerVotes.clear();
 
-        ChatUtil.broadcast("&8&m--------------------------------");
-        ChatUtil.broadcast("&e&lNUEVA VOTACIoN!");
-        ChatUtil.broadcast("&7El hoster ha iniciado una votacion de: &a" + category.toUpperCase());
-        ChatUtil.broadcast("");
+        ChatUtil.broadcastNoPrefix("&8&m--------------------------------");
+        ChatUtil.broadcastNoPrefix("&e&lNUEVA VOTACIoN!");
+        ChatUtil.broadcastNoPrefix("&7El hoster ha iniciado una votacion de: &a" + category.toUpperCase());
+        ChatUtil.broadcastNoPrefix("");
 
         for (int i = 0; i < currentOptions.size(); i++) {
-            ChatUtil.broadcast("&e" + (i + 1) + ". &f" + currentOptions.get(i));
+            ChatUtil.broadcastNoPrefix("&e" + (i + 1) + ". &f" + currentOptions.get(i));
         }
 
-        ChatUtil.broadcast("");
-        ChatUtil.broadcast("&7Usa &b/vote <numero> &7para elegir tu preferencia.");
-        ChatUtil.broadcast("&8&m--------------------------------");
+        ChatUtil.broadcastNoPrefix("");
+        ChatUtil.broadcastNoPrefix("&7Usa &b/vote <numero> &7para elegir tu preferencia.");
+        ChatUtil.broadcastNoPrefix("&8&m--------------------------------");
     }
 
     public void stopVote(CommandSender sender) {
@@ -71,11 +71,11 @@ public class VoteTeamManager {
 
         String winner = currentOptions.get(winningIndex);
 
-        ChatUtil.broadcast("&8&m--------------------------------");
-        ChatUtil.broadcast("&e&lVOTACIoN FINALIZADA!");
-        ChatUtil.broadcast("&7Categoria: &a" + currentVoteCategory.toUpperCase());
-        ChatUtil.broadcast("&7Resultado ganador: &a&l" + winner + " &8(&e" + maxVotes + " votos&8)");
-        ChatUtil.broadcast("&8&m--------------------------------");
+        ChatUtil.broadcastNoPrefix("&8&m--------------------------------");
+        ChatUtil.broadcastNoPrefix("&e&lVOTACIoN FINALIZADA!");
+        ChatUtil.broadcastNoPrefix("&7Categoria: &a" + currentVoteCategory.toUpperCase());
+        ChatUtil.broadcastNoPrefix("&7Resultado ganador: &a&l" + winner + " &8(&e" + maxVotes + " votos&8)");
+        ChatUtil.broadcastNoPrefix("&8&m--------------------------------");
         if (currentVoteCategory.equalsIgnoreCase("type")) {
             plugin.getTeamManager().setTeamType(sender, winner);
         } else if (currentVoteCategory.equalsIgnoreCase("size")) {
