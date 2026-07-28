@@ -22,6 +22,10 @@ public class TeamCommands implements CommandExecutor {
             ChatUtil.msg(sender, "Solo jugadores.");
             return true;
         }
+        if (!sender.hasPermission("VoidUHC.member")) {
+            ChatUtil.msg(sender, "&cSin permisos de member.");
+            return true;
+        }
 
         if (args.length == 0) {
             ChatUtil.msg(sender, "&8&m--------------------------------");

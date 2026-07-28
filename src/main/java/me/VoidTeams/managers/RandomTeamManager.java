@@ -49,7 +49,7 @@ public class RandomTeamManager {
         }
 
         ChatUtil.msg(sender, "&eTodos los jugadores han sido aleatorizados en equipos de " + teamSize + ".");
-        ChatUtil.broadcast("&a¡Los equipos han sido aleatorizados!");
+        ChatUtil.broadcast("&aLos equipos han sido aleatorizados!");
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 1.0f);
         }

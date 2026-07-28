@@ -3,7 +3,6 @@ package me.VoidTeams.managers;
 import me.VoidTeams.VoidTeams;
 import me.VoidTeams.utils.ChatUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,7 +16,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-// importaciones importantes imports para importar.
+// Colores HEX & RGB
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -35,21 +35,19 @@ public class TeamManager {
     private boolean teamsLocked = false;
     private boolean chatLocked = false;
 
-    // gett y setts
-    public boolean isTeamsLocked() { return teamsLocked; }
     public boolean isChatLocked() { return chatLocked; }
     public void setTeamsLocked(boolean locked) { this.teamsLocked = locked; }
     public void setChatLocked(boolean locked) { this.chatLocked = locked; }
-
 
     //scoreboard discreto para radicate
     private final org.bukkit.scoreboard.Objective datapackObj;
     private int nextTeamId = 1;
     private final Map<String, Integer> teamIdMap = new HashMap<>();
 
-    private final ChatColor[] availableColors = {
-            ChatColor.RED, ChatColor.BLUE, ChatColor.GREEN, ChatColor.YELLOW,
-            ChatColor.AQUA, ChatColor.GOLD, ChatColor.LIGHT_PURPLE
+    // Colores por defecto ahora en formato HEX
+    private final String[] availableHexColors = {
+            "#FF5555", "#5555FF", "#55FF55", "#FFFF55",
+            "#55FFFF", "#FFAA00", "#FF55FF", "FF31CC"
     };
     private final List<String> availableIcons;
 
@@ -77,41 +75,60 @@ public class TeamManager {
     public int getTeamSize() { return teamSize; }
     public String getTeamType() { return teamType; }
 
-    public void setTeamType(CommandSender sender, String type, int size) {
-        if (type.equalsIgnoreCase("Choosen") || type.equalsIgnoreCase("Random")) {
+
+    public void setTeamType(CommandSender sender, String type) {
+        if (type.equalsIgnoreCase("Choosen") || type.equalsIgnoreCase("Random") || type.equalsIgnoreCase("Vote")) {
             this.teamType = type;
-            this.teamSize = size;
 
             plugin.getConfig().set("team-type", type);
-            plugin.getConfig().set("max-team-size", size);
             plugin.saveConfig();
 
-            ChatUtil.msg(sender, "&aModo actualizado: &e" + type + " &ade tamanio &e" + size);
-            ChatUtil.broadcast("&aEl administrador ha configurado los equipos como: &e" + type + " &ade tamanio &e" + size);
+            ChatUtil.msg(sender, "&aModo de equipos actualizado a: &e" + type);
+            ChatUtil.broadcast("&aEl administrador ha configurado el modo de los equipos a: &e" + type);
+
             for (Player p : Bukkit.getOnlinePlayers()) {
                 p.playSound(p.getLocation(), Sound.ITEM_GOAT_HORN_SOUND_0, 1.0f, 1.0f);
             }
         } else {
-            ChatUtil.msg(sender, "&cEl tipo debe ser 'Choosen' o 'Random'.");
+            ChatUtil.msg(sender, "&cEl tipo debe ser 'Choosen', 'Random' o 'Vote'.");
         }
     }
+
+    public void setTeamSize(CommandSender sender, int size) {
+        if (size < 1) size = 1;
+
+        this.teamSize = size;
+        plugin.getConfig().set("max-team-size", size);
+        plugin.saveConfig();
+
+        ChatUtil.broadcast("&aEl administrador ha configurado el tamaño maximo de los equipos a: &e" + size);
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.playSound(p.getLocation(), Sound.ITEM_GOAT_HORN_SOUND_1, 1.0f, 1.0f);
+        }
+    }
+
+    // ----------------------------------------------------
+    // SISTEMA DE INVITACIONES Y EQUIPOS
+    // ----------------------------------------------------
 
     public void invitePlayer(Player inviter, Player target) {
         if (teamType.equalsIgnoreCase("Random")) {
             ChatUtil.msg(inviter, "&cNo puedes invitar jugadores en el modo Random.");
             inviter.playSound(inviter.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+            inviter.sendTitle(ChatColor.RED + "Error", ChatColor.YELLOW + "", 10, 70, 20);
             return;
-
         }
         if (teamsLocked) {
-            ChatUtil.msg(inviter, "&cLa creación y modificación de equipos está bloqueada.");
+            ChatUtil.msg(inviter, "&cLa creacion y modificacion de equipos esta bloqueada.");
             inviter.playSound(inviter.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+            inviter.sendTitle(ChatColor.RED + "Error", ChatColor.YELLOW + "", 10, 70, 20);
             return;
         }
 
         Team myTeam = sb.getEntryTeam(inviter.getName());
         if (myTeam != null && myTeam.getSize() >= teamSize) {
             ChatUtil.msg(inviter, "&cTu equipo ya esta lleno (Max: " + teamSize + ").");
+            inviter.sendTitle(ChatColor.RED + "Error", ChatColor.YELLOW + "", 10, 70, 20);
             inviter.playSound(inviter.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
@@ -119,6 +136,7 @@ public class TeamManager {
         pendingInvites.put(target.getUniqueId(), inviter.getUniqueId());
         ChatUtil.msg(inviter, "&aInvitacion enviada a &b" + target.getName());
         inviter.playSound(inviter.getLocation(), Sound.ENTITY_ARROW_SHOOT, 1.0f, 1.0f);
+
         TextComponent msg = new TextComponent(ChatColor.translateAlternateColorCodes('&', "&b" + inviter.getName() + " &ate ha invitado a su equipo. "));
         TextComponent click = new TextComponent(ChatColor.translateAlternateColorCodes('&', "&e&l[HAZ CLICK AQUI PARA ACEPTAR]"));
 
@@ -133,11 +151,13 @@ public class TeamManager {
     public void acceptInvite(Player player, Player leader) {
         if (teamsLocked) {
             ChatUtil.msg(player, "&cNo puedes unirte a equipos en este momento.");
+            player.sendTitle(ChatColor.RED + "Error", ChatColor.YELLOW + "", 10, 70, 20);
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
         if (teamType.equalsIgnoreCase("Random")) {
             ChatUtil.msg(player, "&cLas invitaciones estan deshabilitadas en modo Random.");
+            player.sendTitle(ChatColor.RED + "Error", ChatColor.YELLOW + "", 10, 70, 20);
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
@@ -170,6 +190,7 @@ public class TeamManager {
             pendingInvites.remove(player.getUniqueId());
 
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+            leader.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
             ChatUtil.broadcast("&b" + player.getName() + " &ase ha unido al equipo de &b" + leader.getName());
         } else {
             ChatUtil.msg(player, "&cNo tienes invitaciones de este jugador.");
@@ -177,10 +198,12 @@ public class TeamManager {
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
         }
     }
+
     public void leaveTeam(Player player) {
         Team t = sb.getEntryTeam(player.getName());
         if (teamsLocked) {
-            ChatUtil.msg(player, "&cLa creación y modificación de equipos está bloqueada.");
+            ChatUtil.msg(player, "&cLa creacion y modificacion de equipos esta bloqueada.");
+            player.sendTitle(ChatColor.RED + "Error", ChatColor.YELLOW + "", 10, 70, 20);
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
@@ -200,6 +223,10 @@ public class TeamManager {
         }
     }
 
+    // ----------------------------------------------------
+    // MANEJO DE COLORES HEX E ICONOS
+    // ----------------------------------------------------
+
     public void setRandomColor(CommandSender sender, Player target) {
         Team team = sb.getEntryTeam(target.getName());
         if (team == null) {
@@ -207,9 +234,8 @@ public class TeamManager {
             return;
         }
 
-        ChatColor randomColor = availableColors[new Random().nextInt(availableColors.length)];
-
-        try { team.setColor(randomColor); } catch (NoSuchMethodError ignored) {}
+        String randomHex = availableHexColors[new Random().nextInt(availableHexColors.length)];
+        ChatColor randomColor = ChatColor.of(randomHex);
 
         String oldPrefix = team.getPrefix();
         String currentIcon = "#1";
@@ -218,14 +244,15 @@ public class TeamManager {
         }
 
         team.setPrefix(randomColor + "[" + currentIcon + "] " + ChatColor.RESET);
-        ChatUtil.msg(sender, "&aColor actualizado a: " + randomColor + randomColor.name());
+        ChatUtil.msg(sender, "&aColor actualizado a: " + randomColor + randomHex);
     }
 
     public void applyRandomTheme(Team team) {
         Random random = new Random();
-        ChatColor randomColor = availableColors[random.nextInt(availableColors.length)];
-        String prefixIcon;
+        String randomHex = availableHexColors[random.nextInt(availableHexColors.length)];
+        ChatColor randomColor = ChatColor.of(randomHex);
 
+        String prefixIcon;
         boolean useCustomIcons = plugin.getConfig().getBoolean("use-custom-icons", false);
 
         if (useCustomIcons && !availableIcons.isEmpty()) {
@@ -233,19 +260,8 @@ public class TeamManager {
         } else {
             prefixIcon = "#" + (random.nextInt(99) + 1);
         }
-        try { team.setColor(randomColor); } catch (NoSuchMethodError ignored) {}
-        team.setPrefix(randomColor + "[" + prefixIcon + "] " + ChatColor.RESET);
-    }
 
-    public void updatePlayerDatapackID(String playerName, Team team) {
-        if (team == null) {
-            datapackObj.getScore(playerName).setScore(0);
-        } else {
-            if (!teamIdMap.containsKey(team.getName())) {
-                teamIdMap.put(team.getName(), nextTeamId++);
-            }
-            datapackObj.getScore(playerName).setScore(teamIdMap.get(team.getName()));
-        }
+        team.setPrefix(randomColor + "[" + prefixIcon + "] " + ChatColor.RESET);
     }
 
     public void setTeamColor(CommandSender sender, Player target, String colorName) {
@@ -256,18 +272,18 @@ public class TeamManager {
         }
 
         try {
-            ChatColor newColor = ChatColor.valueOf(colorName.toUpperCase());
+            ChatColor newColor = ChatColor.of(colorName);
             String oldPrefix = team.getPrefix();
 
-            String icon = "[#1]"; // Default
+            String icon = "[#1]";
             if (oldPrefix != null && oldPrefix.contains("[") && oldPrefix.contains("]")) {
                 icon = oldPrefix.substring(oldPrefix.indexOf("["), oldPrefix.indexOf("]") + 1);
             }
 
             team.setPrefix(newColor + icon + " ");
-            ChatUtil.msg(sender, "&aColor establecido a " + newColor + colorName);
+            ChatUtil.msg(sender, "&aColor establecido a: " + newColor + colorName);
         } catch (IllegalArgumentException e) {
-            ChatUtil.msg(sender, "&cColor invalido. Usa nombres estandar (RED, BLUE, GOLD, etc).");
+            ChatUtil.msg(sender, "&cColor invalido. Usa codigo HEX (Ej: #FF5555).");
         }
     }
 
@@ -280,12 +296,23 @@ public class TeamManager {
 
         String oldPrefix = team.getPrefix();
         String colorCode = "&f";
-        if (oldPrefix != null && oldPrefix.length() >= 2) {
-            colorCode = oldPrefix.substring(0, 2);
+        if (oldPrefix != null && oldPrefix.contains("[")) {
+            colorCode = oldPrefix.substring(0, oldPrefix.indexOf("["));
         }
 
         team.setPrefix(colorCode + "[" + iconText + "] ");
         ChatUtil.msg(sender, "&aIcono establecido a: " + colorCode + "[" + iconText + "]");
+    }
+
+    public void updatePlayerDatapackID(String playerName, Team team) {
+        if (team == null) {
+            datapackObj.getScore(playerName).setScore(0);
+        } else {
+            if (!teamIdMap.containsKey(team.getName())) {
+                teamIdMap.put(team.getName(), nextTeamId++);
+            }
+            datapackObj.getScore(playerName).setScore(teamIdMap.get(team.getName()));
+        }
     }
 
     public void reloadConfigValues() {
@@ -304,6 +331,9 @@ public class TeamManager {
         }
     }
 
+    // ----------------------------------------------------
+    // COMANDOS ADMINISTRATIVOS
+    // ----------------------------------------------------
 
     public void forceJoin(CommandSender sender, Player p1, Player p2) {
         Team t2 = sb.getEntryTeam(p2.getName());
@@ -312,7 +342,6 @@ public class TeamManager {
             if (t2 == null) {
                 t2 = sb.registerNewTeam("team_" + p2.getName());
                 applyRandomTheme(t2);
-                //friendly fire esto coso
                 t2.setAllowFriendlyFire(plugin.getConfig().getBoolean("friendly-fire", false));
             }
             t2.addEntry(p2.getName());
@@ -333,6 +362,7 @@ public class TeamManager {
         ChatUtil.msg(p2, "&b" + p1.getName() + " &aha sido forzado a tu equipo.");
         ChatUtil.msg(sender, "&aJugador movido con exito.");
     }
+
     public void removePlayer(CommandSender sender, Player target) {
         Team team = sb.getEntryTeam(target.getName());
         if (team != null) {

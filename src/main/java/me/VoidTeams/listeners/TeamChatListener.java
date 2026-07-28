@@ -21,7 +21,7 @@ public class TeamChatListener implements Listener {
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         if (plugin.getTeamManager().isChatLocked()) {
             event.setCancelled(true);
-            ChatUtil.msg(event.getPlayer(), "&cEl chat de equipo está bloqueado actualmente.");
+            ChatUtil.msg(event.getPlayer(), "&cEl chat de equipo esta bloqueado actualmente.");
             return;
         }
 
