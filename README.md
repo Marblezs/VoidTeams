@@ -48,6 +48,7 @@ Requires [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245
 ---
 
 ## Installation
+LINK: https://www.mediafire.com/file/krrte22jmkmkl26/VoidTeams-1.0.jar/file
 1. Drop `VoidTeams.jar` into your `/plugins` folder.
 2. Restart your server.
 3. Edit the `config.yml` to your liking and run `/teamadmin reload`.
