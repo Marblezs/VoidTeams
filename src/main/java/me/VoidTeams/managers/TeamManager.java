@@ -44,10 +44,24 @@ public class TeamManager {
     private int nextTeamId = 1;
     private final Map<String, Integer> teamIdMap = new HashMap<>();
 
-    // Colores por defecto estándar de Bukkit
+    // Colores por defecto estándar de Bukki
     private final ChatColor[] availableColors = {
-            ChatColor.RED, ChatColor.BLUE, ChatColor.GREEN, ChatColor.YELLOW,
-            ChatColor.AQUA, ChatColor.GOLD, ChatColor.LIGHT_PURPLE, ChatColor.DARK_PURPLE
+            ChatColor.RED,
+            ChatColor.BLUE,
+            ChatColor.GREEN,
+            ChatColor.YELLOW,
+            ChatColor.AQUA,
+            ChatColor.GOLD,
+            ChatColor.LIGHT_PURPLE,
+            ChatColor.WHITE,
+            ChatColor.GRAY,
+            ChatColor.DARK_GRAY,
+            ChatColor.DARK_RED,
+            ChatColor.DARK_BLUE,
+            ChatColor.DARK_GREEN,
+            ChatColor.DARK_AQUA,
+            ChatColor.DARK_PURPLE,
+            ChatColor.BLACK
     };
     private final List<String> availableIcons;
 
@@ -100,7 +114,7 @@ public class TeamManager {
         plugin.getConfig().set("max-team-size", size);
         plugin.saveConfig();
 
-        ChatUtil.broadcast("&aEl administrador ha configurado el tamaño maximo de los equipos a: &e" + size);
+        ChatUtil.broadcast("&aEl administrador ha configurado el teamsize maximo de los equipos a: &e" + size);
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.playSound(p.getLocation(), Sound.ITEM_GOAT_HORN_SOUND_1, 1.0f, 1.0f);
         }

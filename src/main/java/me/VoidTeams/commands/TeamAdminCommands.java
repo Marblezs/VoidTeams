@@ -29,20 +29,20 @@ public class TeamAdminCommands implements CommandExecutor {
 
         if (args.length == 0) {
             ChatUtil.msg(sender, "&8&m--------------------------------");
-            ChatUtil.msg(sender, "&f/teamadm color <jugador> &7- Asigna un color al equipo");
-            ChatUtil.msg(sender, "&f/teamadm icon <jugador> &7- Asigna un icono al equipo");
-            ChatUtil.msg(sender, "&f/teamadm remove <jugador> &7- Remueve a alguien del equipo");
-            ChatUtil.msg(sender, "&f/teamadm disband <jugador> &7- Remueve el equipo completo.");
-            ChatUtil.msg(sender, "&f/teamadm clear &7- Elimina todos los equipos.");
-            ChatUtil.msg(sender, "&f/teamadm force <jugador1> <jugador2> &7- Mover jugador1 a jugador2.");
-            ChatUtil.msg(sender, "&f/teamadm shuffle &7- Aleatoriedad (Respeta modo actual)");
-            ChatUtil.msg(sender, "&f/teamadm shuffleforce &7- Aleatoriedad forzada");
-            ChatUtil.msg(sender, "&f/teamadm type <Choosen|Random|Vote> &7- Cambia el modo");
-            ChatUtil.msg(sender, "&f/teamadm size <tamaño> &7- Cambia el tamaño maximo");
-
-            ChatUtil.msg(sender, "&f/teamadm vote <type|size> <opc1> <opc2> [opc3..5] &7- Inicia votacion");
-            ChatUtil.msg(sender, "&f/teamadm vote stop &7- Finaliza la votacion actual");
-            ChatUtil.msg(sender, "&f/teamadm block <all|chat|teams|none> &7- Control de bloqueos");
+            ChatUtil.msgNoPrefix(sender, "&f/teamadm color <jugador> <color> &7- Asigna un color al equipo");
+            ChatUtil.msgNoPrefix(sender, "&f/teamadm icon <jugador> <icono> &7- Asigna un icono al equipo");
+            ChatUtil.msgNoPrefix(sender, "&f/teamadm remove <jugador> &7- Remueve a alguien del equipo");
+            ChatUtil.msgNoPrefix(sender, "&f/teamadm disband <jugador> &7- Remueve el equipo completo");
+            ChatUtil.msgNoPrefix(sender, "&f/teamadm clear &7- Elimina todos los equipos");
+            ChatUtil.msgNoPrefix(sender, "&f/teamadm force <j1> <j2> &7- Mueve j1 al equipo de j2");
+            ChatUtil.msgNoPrefix(sender, "&f/teamadm shuffle &7- Aleatoriedad (Respeta modo actual)");
+            ChatUtil.msgNoPrefix(sender, "&f/teamadm shuffleforce &7- Aleatoriedad forzada");
+            ChatUtil.msgNoPrefix(sender, "&f/teamadm type <Choosen|Random|Vote> &7- Cambia el modo");
+            ChatUtil.msgNoPrefix(sender, "&f/teamadm size <set|add|remove> <val> &7- Cambia el tamaño");
+            ChatUtil.msgNoPrefix(sender, "&f/teamadm vote <type|size> <opc1> <opc2> ... &7- Inicia votacion");
+            ChatUtil.msgNoPrefix(sender, "&f/teamadm vote stop &7- Finaliza la votacion actual");
+            ChatUtil.msgNoPrefix(sender, "&f/teamadm block <all|chat|teams|none> &7- Control de bloqueos");
+            ChatUtil.msgNoPrefix(sender, "&f/teamadm reload &7- Recarga la configuracion");
             ChatUtil.msg(sender, "&8&m--------------------------------");
             return true;
         }
@@ -59,7 +59,7 @@ public class TeamAdminCommands implements CommandExecutor {
             case "remove" -> {
                 if (args.length < 2) { ChatUtil.msg(sender, "&cUso: /teamadmin remove <j1>"); return true; }
                 Player p1 = Bukkit.getPlayer(args[1]);
-                if (p1 == null) { ChatUtil.msg(sender, "&cJugadores offline."); return true; }
+                if (p1 == null) { ChatUtil.msg(sender, "&cJugador offline."); return true; }
                 plugin.getTeamManager().removePlayer(sender, p1);
             }
             case "clear" -> plugin.getTeamManager().clearAllTeams(sender);
@@ -125,12 +125,10 @@ public class TeamAdminCommands implements CommandExecutor {
                         case "add" -> newSize = currentSize + value;
                         case "remove" -> {
                             newSize = currentSize - value;
-                            if (newSize < 1) {
-                                newSize = 1; // Evitamos tamaños de equipo menores a 1
-                            }
+                            if (newSize < 1) newSize = 1;
                         }
                         default -> {
-                            ChatUtil.msg(sender, "&cAccion invalida. Usa: &eids set, add o remove&c.");
+                            ChatUtil.msg(sender, "&cAccion invalida. Usa: set, add o remove.");
                             return true;
                         }
                     }
@@ -166,14 +164,15 @@ public class TeamAdminCommands implements CommandExecutor {
                         options.add(args[i]);
                     }
 
-                    plugin.getVoteTeamManager().startVote(sender, action, options);
+                    // Se pasan 30 segundos por defecto para el temporizador de la Action Bar
+                    plugin.getVoteTeamManager().startVote(sender, action, options, 30);
                 } else {
                     ChatUtil.msg(sender, "&cOpcion invalida. Usa: type, size o stop.");
                 }
             }
 
             case "block" -> {
-                if (args.length < 2) { ChatUtil.msg(sender, "&cUso: /teamadmin block <all, chat, teams, none>"); return true; }
+                if (args.length < 2) { ChatUtil.msg(sender, "&cUso: /teamadmin block <all|chat|teams|none>"); return true; }
                 String target = args[1].toLowerCase();
                 switch (target) {
                     case "all" -> {

@@ -29,11 +29,11 @@ public class TeamCommands implements CommandExecutor {
 
         if (args.length == 0) {
             ChatUtil.msg(sender, "&8&m--------------------------------");
-            ChatUtil.msg(sender, "&f/team color &7- Asigna un color rapido al equipo");
-            ChatUtil.msg(sender, "&f/team invite <jugador> &7- Invita a alguien.");
-            ChatUtil.msg(sender, "&f/team accept <jugador> &7- Acepta una invitacion.");
-            ChatUtil.msg(sender, "&f/team leave &7- Sal de tu equipo actual.");
-            ChatUtil.msg(sender, "&f/team chat &7- Chat del equipo");
+            ChatUtil.msgNoPrefix(sender, "&f/team color &7- Asigna un color rapido al equipo");
+            ChatUtil.msgNoPrefix(sender, "&f/team invite <jugador> &7- Invita a alguien.");
+            ChatUtil.msgNoPrefix(sender, "&f/team accept <jugador> &7- Acepta una invitacion.");
+            ChatUtil.msgNoPrefix(sender, "&f/team leave &7- Sal de tu equipo actual.");
+            ChatUtil.msgNoPrefix(sender, "&f/team chat &7- Chat del equipo");
             ChatUtil.msg(sender, "&8&m--------------------------------");
             return true;
         }

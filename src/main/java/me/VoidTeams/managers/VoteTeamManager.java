@@ -2,8 +2,11 @@ package me.VoidTeams.managers;
 
 import me.VoidTeams.VoidTeams;
 import me.VoidTeams.utils.ChatUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 
@@ -16,11 +19,14 @@ public class VoteTeamManager {
     private List<String> currentOptions = new ArrayList<>();
     private final Map<UUID, Integer> playerVotes = new HashMap<>();
 
+    private int timeLeft = 0;
+    private BukkitTask voteTask = null;
+
     public VoteTeamManager(VoidTeams plugin) {
         this.plugin = plugin;
     }
 
-    public void startVote(CommandSender sender, String category, List<String> options) {
+    public void startVote(CommandSender sender, String category, List<String> options, int durationSeconds) {
         if (voteActive) {
             ChatUtil.msg(sender, "&cYa hay una votacion activa. Usa /teamadm vote stop primero.");
             return;
@@ -30,6 +36,7 @@ public class VoteTeamManager {
         this.currentVoteCategory = category;
         this.currentOptions = new ArrayList<>(options);
         this.playerVotes.clear();
+        this.timeLeft = durationSeconds;
 
         ChatUtil.broadcastNoPrefix("&8&m--------------------------------");
         ChatUtil.broadcastNoPrefix("&e&lNUEVA VOTACIoN!");
@@ -43,6 +50,72 @@ public class VoteTeamManager {
         ChatUtil.broadcastNoPrefix("");
         ChatUtil.broadcastNoPrefix("&7Usa &b/vote <numero> &7para elegir tu preferencia.");
         ChatUtil.broadcastNoPrefix("&8&m--------------------------------");
+
+        startVoteTask();
+    }
+
+    private void startVoteTask() {
+        voteTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!voteActive) {
+                    cancel();
+                    return;
+                }
+
+                if (timeLeft <= 0) {
+                      stopVote(Bukkit.getConsoleSender());
+                    cancel();
+                    return;
+                }
+
+                String currentLeader = calculateCurrentLeader();
+
+                String actionBarMessage = "&eVotacion: &f" + currentVoteCategory.toUpperCase()
+                        + " &8| &aGanando: &b&l" + currentLeader
+                        + " &8(&e" + timeLeft + "s&8)";
+
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    ChatUtil.sendActionBar(player, actionBarMessage);
+                }
+
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    ChatUtil.sendActionBar(player, actionBarMessage);
+                }
+
+                timeLeft--;
+            }
+        }.runTaskTimer(plugin, 0L, 20L);
+    }
+
+    private String calculateCurrentLeader() {
+        if (playerVotes.isEmpty()) return "Ninguno";
+
+        int[] voteCounts = new int[currentOptions.size()];
+        for (Integer voteIndex : playerVotes.values()) {
+            if (voteIndex >= 0 && voteIndex < voteCounts.length) {
+                voteCounts[voteIndex]++;
+            }
+        }
+
+        int winningIndex = 0;
+        int maxVotes = -1;
+        boolean empate = false;
+
+        for (int i = 0; i < voteCounts.length; i++) {
+            if (voteCounts[i] > maxVotes) {
+                maxVotes = voteCounts[i];
+                winningIndex = i;
+                empate = false;
+            } else if (voteCounts[i] == maxVotes && maxVotes > 0) {
+                empate = true;
+            }
+        }
+
+        if (maxVotes <= 0) return "Empate / Sin votos";
+        if (empate) return "Empate";
+
+        return currentOptions.get(winningIndex);
     }
 
     public void stopVote(CommandSender sender) {
@@ -53,15 +126,20 @@ public class VoteTeamManager {
 
         this.voteActive = false;
 
+        if (voteTask != null) {
+            voteTask.cancel();
+            voteTask = null;
+        }
+
         int[] voteCounts = new int[currentOptions.size()];
         for (Integer voteIndex : playerVotes.values()) {
             if (voteIndex >= 0 && voteIndex < voteCounts.length) {
                 voteCounts[voteIndex]++;
             }
         }
+
         int winningIndex = 0;
         int maxVotes = -1;
-
         for (int i = 0; i < voteCounts.length; i++) {
             if (voteCounts[i] > maxVotes) {
                 maxVotes = voteCounts[i];
@@ -69,13 +147,14 @@ public class VoteTeamManager {
             }
         }
 
-        String winner = currentOptions.get(winningIndex);
+        String winner = currentOptions.isEmpty() ? "Ninguno" : currentOptions.get(winningIndex);
 
         ChatUtil.broadcastNoPrefix("&8&m--------------------------------");
         ChatUtil.broadcastNoPrefix("&e&lVOTACIoN FINALIZADA!");
         ChatUtil.broadcastNoPrefix("&7Categoria: &a" + currentVoteCategory.toUpperCase());
         ChatUtil.broadcastNoPrefix("&7Resultado ganador: &a&l" + winner + " &8(&e" + maxVotes + " votos&8)");
         ChatUtil.broadcastNoPrefix("&8&m--------------------------------");
+
         if (currentVoteCategory.equalsIgnoreCase("type")) {
             plugin.getTeamManager().setTeamType(sender, winner);
         } else if (currentVoteCategory.equalsIgnoreCase("size")) {
@@ -83,7 +162,7 @@ public class VoteTeamManager {
                 int size = Integer.parseInt(winner);
                 plugin.getTeamManager().setTeamSize(sender, size);
             } catch (NumberFormatException e) {
-                ChatUtil.broadcast("&cEl tamaño ganador no es un numero. El hoster debera ajustarlo manualmente.");
+                ChatUtil.broadcast("&cEl TeamSize ganador no es un numero o accion valida. El hoster debera ajustarlo manualmente :p ");
             }
         }
     }

@@ -114,7 +114,7 @@ public class VoidTeamsExpansion extends PlaceholderExpansion {
                         String colorEstado = isAlive ? "&a" : "&f";
                         if (!isConnected) colorEstado = "&7";
 
-                        return headIcon + "&8> " + colorEstado + memberName + distanceStr;
+                        return headIcon + "%headsanywhere_head_" + memberName + "%" + "&8> " + colorEstado + memberName + distanceStr;
                     }
                 }
             } catch (NumberFormatException ignored) {}

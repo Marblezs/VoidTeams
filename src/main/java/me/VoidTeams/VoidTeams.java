@@ -40,7 +40,7 @@ public class VoidTeams extends JavaPlugin {
 
         getLogger().info("=========================================");
         getLogger().info("       VoidTeams       Version:          ");
-        getLogger().info("      By: MarcyWu        V1.4            ");
+        getLogger().info("      By: MarcyWu        V1.5            ");
         getLogger().info("     Gracias por usar mi plugin          ");
         getLogger().info("=========================================");
 

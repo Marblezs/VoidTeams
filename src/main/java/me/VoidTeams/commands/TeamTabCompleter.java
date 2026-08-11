@@ -19,11 +19,11 @@ public class TeamTabCompleter implements TabCompleter {
     );
 
     private static final List<String> TEAMADMIN_SUB_COMMANDS = Arrays.asList(
-            "force", "clear", "disband", "remove", "type", "size", "shuffle", "shuffleforce", "color", "icon", "block", "startvote"
+            "force", "clear", "disband", "remove", "type", "size", "shuffle", "shuffleforce", "color", "icon", "block", "vote"
     );
 
     private static final List<String> TEAM_TYPES = Arrays.asList(
-            "Choosen", "Random", "Vote", "Auctions", "Moles"
+            "Choosen", "Random", "Vote", "AuctionsNoUsar", "MolesNoUsar", "RiggedNoUsar", "LoveAFirstSightNousar"
     );
 
     private static final List<String> BLOCK_OPTIONS = Arrays.asList(
@@ -33,6 +33,9 @@ public class TeamTabCompleter implements TabCompleter {
     private static final List<String> COLORS = Arrays.asList(
             "RED", "BLUE", "GREEN", "YELLOW", "AQUA", "GOLD", "LIGHT_PURPLE", "WHITE",
             "GRAY", "DARK_GRAY", "DARK_RED", "DARK_BLUE", "DARK_GREEN", "DARK_AQUA", "DARK_PURPLE", "BLACK"
+    );
+    private static final List<String> VOTATION = Arrays.asList(
+            "type", "size", "msg, stop, other"
     );
 
     @Override
@@ -59,8 +62,10 @@ public class TeamTabCompleter implements TabCompleter {
                     candidates = TEAM_TYPES;
                 } else if (sub.equals("block")) {
                     candidates = BLOCK_OPTIONS;
+                } else if (sub.equals("vote")) {
+                    candidates = VOTATION;
                 } else if (sub.equals("size")) {
-                    candidates = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8");
+                    candidates = Arrays.asList("add", "remove", "set");
                 } else if (Arrays.asList("force", "disband", "remove", "color", "icon").contains(sub)) {
                     for (Player p : Bukkit.getOnlinePlayers()) {
                         candidates.add(p.getName());
