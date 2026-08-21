@@ -1,0 +1,43 @@
+name: VoidTeams
+version: 2.2.0
+main: me.VoidTeams.VoidTeams
+api-version: '1.21'
+author: MarcyWu
+description: Lightweight RGB team system designed for VoidUHC.
+softdepend: [PlaceholderAPI, HeadsAnywhere]
+
+commands:
+  team:
+    description: Gestión de equipos para jugadores.
+    aliases: [t]
+    permission: voidteams.member
+  teamadmin:
+    description: Administración de equipos para hosters.
+    aliases: [ta, teamadm]
+    permission: voidteams.admin
+  vote:
+    description: Votar una opción activa de VoidTeams.
+    aliases: [v]
+    permission: voidteams.member
+  ti:
+    description: Abre el inventario compartido de tu equipo.
+    aliases: [teaminventory]
+    permission: voidteams.member
+  tl:
+    description: Comparte tus coordenadas con tu equipo.
+    aliases: [teamlocation]
+    permission: voidteams.member
+  mores:
+    description: Comparte tus minerales picados con tu equipo.
+    aliases: [teamores]
+    permission: voidteams.member
+
+permissions:
+  voidteams.member:
+    description: Permite usar los comandos normales de equipos.
+    default: true
+  voidteams.admin:
+    description: Permite administrar equipos y votaciones.
+    default: op
+    children:
+      voidteams.member: true

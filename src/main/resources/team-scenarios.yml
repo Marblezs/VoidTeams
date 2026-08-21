@@ -1,0 +1,40 @@
+# =============================================================
+# VoidTeams 2.2 - Team Scenarios
+# Estas reglas son independientes de /tl y /mores, que son utilidades.
+# =============================================================
+
+scenarios:
+  team_inventory:
+    enabled: false
+    settings:
+      # Debe ser múltiplo de 9. Se limita automáticamente entre 9 y 54.
+      size: 27
+      # /ti se bloquea silenciosamente después de causar/recibir daño PvP.
+      combat-lock-seconds: 5
+
+  shared_health:
+    enabled: false
+    settings:
+      # Si está en true, la curación real de un compañero se replica al resto.
+      share-healing: true
+      # Evita que el scenario afecte lobby/arena si lo dejas activado entre partidas.
+      ignored-worlds:
+        - "lobby"
+        - "arena"
+
+  captains:
+    enabled: false
+    settings:
+      # Tiempo máximo que tiene cada capitán para usar /team pick <jugador>.
+      # Si se agota, se elige automáticamente un jugador disponible.
+      pick-time-seconds: 30
+
+  auction:
+    enabled: false
+    settings:
+      starting-credits: 100
+      bid-time-seconds: 15
+      minimum-opening-bid: 1
+      minimum-increment: 5
+      # Si alguien puja en los últimos segundos, el reloj vuelve como mínimo a este valor.
+      anti-snipe-seconds: 5

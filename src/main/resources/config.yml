@@ -1,0 +1,278 @@
+# =============================================================
+# VoidTeams 2.1 - Configuración
+# Plugin dedicado únicamente a equipos para UHC / competitive.
+# =============================================================
+
+# Si está en true, los equipos se borran al apagar/reiniciar.
+# Si está en false, el scoreboard de Minecraft conserva los equipos.
+clear-teams-on-stop: true
+
+# TeamSize máximo por defecto.
+max-team-size: 2
+
+# Choosen = invitaciones / Random = reparto / Vote = configurable por votación.
+team-type: "Choosen"
+
+# Daño entre compañeros.
+friendly-fire: false
+
+# Bloqueos persistentes del sistema base.
+teams-locked: false
+team-chat-locked: false
+
+# Invitaciones.
+invite-expire-seconds: 60
+
+# Votaciones.
+vote-duration-seconds: 30
+
+# Broadcast global cuando alguien acepta una invitación.
+broadcast-team-joins: true
+
+# El Team Chat se registra en consola para moderación.
+team-chat-log-console: true
+
+# Permitir que jugadores normales cambien aleatoriamente el estilo de su team.
+players-can-randomize-color: true
+players-can-randomize-icon: true
+
+
+# =============================================================
+# TEAM SCENARIOS
+# =============================================================
+# Los estados/opciones de Team Inventory, Shared Health, Captains y Auction
+# ahora viven en team-scenarios.yml.
+# /tl y /mores siguen siendo utilidades y NO son scenarios.
+
+# =============================================================
+# RGB REAL - #RRGGBB
+# No se usan ChatColor para la identidad visual de los equipos.
+# =============================================================
+team-colors:
+  - "#FF5C5C"
+  - "#DC143C"
+  - "#FF7F50"
+  - "#FA8072"
+  - "#FF8C42"
+  - "#FFBF00"
+  - "#FFB347"
+  - "#FFD93D"
+  - "#A7F432"
+  - "#6BCB77"
+  - "#2ECC71"
+  - "#3EB489"
+  - "#14B8A6"
+  - "#2DE2E6"
+  - "#22D3EE"
+  - "#38BDF8"
+  - "#4D96FF"
+  - "#4169E1"
+  - "#1E3A8A"
+  - "#6366F1"
+  - "#9B5DE5"
+  - "#8B5CF6"
+  - "#C4B5FD"
+  - "#F15BB5"
+  - "#FF6EC7"
+  - "#FB7185"
+  - "#A16207"
+  - "#AAB2BD"
+  - "#CBD5E1"
+  - "#F5F7FA"
+  - "#303036"
+  - "#00C2FF"
+  - "#00F5D4"
+  - "#B8F2E6"
+  - "#C77DFF"
+  - "#FF70A6"
+
+use-custom-icons: true
+team-icons:
+  - "⚔"
+  - "✦"
+  - "◆"
+  - "❖"
+  - "☄"
+  - "♛"
+  - "☯"
+  - "★"
+  - "✧"
+  - "♠"
+  - "♦"
+  - "♥"
+  - "♣"
+  - "☠"
+  - "🔥"
+  - "❄"
+  - "⚡"
+  - "☀"
+  - "☾"
+  - "✺"
+
+# =============================================================
+# Sonidos
+# Cada evento puede desactivarse de forma independiente.
+# Usa claves namespaced, por ejemplo minecraft:block.note_block.pling
+# =============================================================
+sounds:
+  success:
+    enabled: true
+    sound: "minecraft:entity.experience_orb.pickup"
+    volume: 0.9
+    pitch: 1.35
+  error:
+    enabled: true
+    sound: "minecraft:entity.villager.no"
+    volume: 0.8
+    pitch: 0.85
+  invite_sent:
+    enabled: true
+    sound: "minecraft:entity.arrow.shoot"
+    volume: 0.7
+    pitch: 1.45
+  invite_received:
+    enabled: true
+    sound: "minecraft:block.note_block.chime"
+    volume: 1.0
+    pitch: 1.25
+  team_created:
+    enabled: true
+    sound: "minecraft:entity.player.levelup"
+    volume: 0.9
+    pitch: 1.15
+  team_join:
+    enabled: true
+    sound: "minecraft:entity.experience_orb.pickup"
+    volume: 0.9
+    pitch: 1.55
+  team_leave:
+    enabled: true
+    sound: "minecraft:block.note_block.bass"
+    volume: 0.75
+    pitch: 0.9
+  team_randomized:
+    enabled: true
+    sound: "minecraft:block.amethyst_block.chime"
+    volume: 1.0
+    pitch: 1.0
+  team_admin_change:
+    enabled: true
+    sound: "minecraft:item.goat_horn.sound.0"
+    volume: 0.8
+    pitch: 1.0
+  team_clear:
+    enabled: true
+    sound: "minecraft:entity.ender_dragon.growl"
+    volume: 0.55
+    pitch: 1.35
+  team_chat:
+    enabled: true
+    sound: "minecraft:block.note_block.hat"
+    volume: 0.35
+    pitch: 1.8
+  vote_start:
+    enabled: true
+    sound: "minecraft:block.note_block.bell"
+    volume: 0.9
+    pitch: 1.15
+  vote_cast:
+    enabled: true
+    sound: "minecraft:block.note_block.pling"
+    volume: 0.7
+    pitch: 1.55
+  vote_tick:
+    enabled: true
+    sound: "minecraft:block.note_block.hat"
+    volume: 0.55
+    pitch: 1.7
+  vote_end:
+    enabled: true
+    sound: "minecraft:ui.toast.challenge_complete"
+    volume: 0.8
+    pitch: 1.0
+
+  team_inventory_open:
+    enabled: true
+    sound: "minecraft:block.ender_chest.open"
+    volume: 0.65
+    pitch: 1.15
+  team_inventory_toggle:
+    enabled: true
+    sound: "minecraft:block.amethyst_block.chime"
+    volume: 0.9
+    pitch: 1.1
+  team_location:
+    enabled: true
+    sound: "minecraft:block.note_block.bit"
+    volume: 0.35
+    pitch: 1.65
+  team_ores:
+    enabled: true
+    sound: "minecraft:block.note_block.xylophone"
+    volume: 0.35
+    pitch: 1.4
+  team_scenario_toggle:
+    enabled: true
+    sound: "minecraft:block.amethyst_block.chime"
+    volume: 0.9
+    pitch: 1.25
+  shared_health_damage:
+    enabled: true
+    sound: "minecraft:block.note_block.didgeridoo"
+    volume: 0.45
+    pitch: 0.8
+  captains_start:
+    enabled: true
+    sound: "minecraft:item.goat_horn.sound.1"
+    volume: 0.8
+    pitch: 1.0
+  captains_turn:
+    enabled: true
+    sound: "minecraft:block.note_block.chime"
+    volume: 0.75
+    pitch: 1.35
+  captains_pick:
+    enabled: true
+    sound: "minecraft:entity.experience_orb.pickup"
+    volume: 0.8
+    pitch: 1.55
+  captains_tick:
+    enabled: true
+    sound: "minecraft:block.note_block.hat"
+    volume: 0.45
+    pitch: 1.65
+  captains_end:
+    enabled: true
+    sound: "minecraft:ui.toast.challenge_complete"
+    volume: 0.8
+    pitch: 1.0
+  auction_start:
+    enabled: true
+    sound: "minecraft:item.goat_horn.sound.2"
+    volume: 0.8
+    pitch: 1.0
+  auction_lot:
+    enabled: true
+    sound: "minecraft:block.note_block.bell"
+    volume: 0.8
+    pitch: 1.1
+  auction_bid:
+    enabled: true
+    sound: "minecraft:block.note_block.pling"
+    volume: 0.7
+    pitch: 1.45
+  auction_tick:
+    enabled: true
+    sound: "minecraft:block.note_block.hat"
+    volume: 0.45
+    pitch: 1.75
+  auction_sold:
+    enabled: true
+    sound: "minecraft:entity.player.levelup"
+    volume: 0.8
+    pitch: 1.2
+  auction_end:
+    enabled: true
+    sound: "minecraft:ui.toast.challenge_complete"
+    volume: 0.8
+    pitch: 1.0
