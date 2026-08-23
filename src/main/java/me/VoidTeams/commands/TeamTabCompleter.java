@@ -42,7 +42,7 @@ public class TeamTabCompleter implements TabCompleter {
             }
         } else if (command.getName().equalsIgnoreCase("teamadmin")) {
             if (args.length == 1) {
-                candidates.addAll(List.of("force", "remove", "disband", "clear", "color", "icon", "shuffle", "shuffleforce",
+                candidates.addAll(List.of("gui", "force", "remove", "disband", "clear", "color", "icon", "shuffle", "shuffleforce",
                         "type", "size", "vote", "block", "friendlyfire", "teaminventory", "scen", "config", "info", "reload"));
             } else if (args.length == 2) {
                 String sub = args[0].toLowerCase();

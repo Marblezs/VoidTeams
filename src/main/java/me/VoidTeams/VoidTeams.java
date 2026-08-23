@@ -9,6 +9,7 @@ import me.VoidTeams.commands.TeamTabCompleter;
 import me.VoidTeams.commands.VoteCommand;
 import me.VoidTeams.commands.TeamUtilityCommands;
 import me.VoidTeams.hooks.VoidTeamsExpansion;
+import me.VoidTeams.gui.TeamAdminGui;
 import me.VoidTeams.listeners.TeamChatListener;
 import me.VoidTeams.managers.RandomTeamManager;
 import me.VoidTeams.managers.SoundManager;
@@ -33,6 +34,7 @@ public class VoidTeams extends JavaPlugin {
     private OreTrackerManager oreTrackerManager;
     private TeamScenarioManager teamScenarioManager;
     private VoidTeamsAPI api;
+    private TeamAdminGui teamAdminGui;
 
     @Override
     public void onEnable() {
@@ -46,6 +48,7 @@ public class VoidTeams extends JavaPlugin {
         teamInventoryManager = new TeamInventoryManager(this);
         oreTrackerManager = new OreTrackerManager(this);
         teamScenarioManager = new TeamScenarioManager(this);
+        teamAdminGui = new TeamAdminGui(this);
         api = new VoidTeamsAPIImpl(this);
         getServer().getServicesManager().register(VoidTeamsAPI.class, api, this, ServicePriority.Normal);
         VoidTeamsProvider.register(api);
@@ -54,6 +57,7 @@ public class VoidTeams extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new TeamChatListener(this), this);
         getServer().getPluginManager().registerEvents(teamInventoryManager, this);
         getServer().getPluginManager().registerEvents(oreTrackerManager, this);
+        getServer().getPluginManager().registerEvents(teamAdminGui, this);
 
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new VoidTeamsExpansion(this).register();
@@ -154,5 +158,9 @@ public class VoidTeams extends JavaPlugin {
 
     public VoidTeamsAPI getAPI() {
         return api;
+    }
+
+    public TeamAdminGui getTeamAdminGui() {
+        return teamAdminGui;
     }
 }

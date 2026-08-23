@@ -33,12 +33,20 @@ public class TeamAdminCommands implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            sendHelp(sender);
+            if (sender instanceof Player player) {
+                plugin.getTeamAdminGui().open(player);
+            } else {
+                sendHelp(sender);
+            }
             return true;
         }
 
         String sub = args[0].toLowerCase();
         switch (sub) {
+            case "gui", "menu" -> {
+                if (sender instanceof Player player) plugin.getTeamAdminGui().open(player);
+                else ChatUtil.msg(sender, "<#FF5C5C>Este menú solo puede abrirse dentro del juego.</#FF5C5C>");
+            }
             case "force" -> force(sender, args);
             case "remove" -> remove(sender, args);
             case "clear" -> plugin.getTeamManager().clearAllTeams(sender);
@@ -554,6 +562,7 @@ public class TeamAdminCommands implements CommandExecutor {
 
     private void sendHelp(CommandSender sender) {
         ChatUtil.msgNoPrefix(sender, "<dark_gray>━━━━━━━━━━</dark_gray> <#8B5CF6><bold>VOIDTEAMS HOST</bold></#8B5CF6> <dark_gray>━━━━━━━━━━</dark_gray>");
+        ChatUtil.msgNoPrefix(sender, "<#22D3EE>/teamadm gui</#22D3EE> <dark_gray>•</dark_gray> <gray>Abrir configuración visual</gray>");
         ChatUtil.msgNoPrefix(sender, "<#22D3EE>/ta force [j1] [j2]</#22D3EE> <dark_gray>•</dark_gray> <gray>Mover j1 al equipo de j2</gray>");
         ChatUtil.msgNoPrefix(sender, "<#22D3EE>/ta remove [jugador]</#22D3EE> <dark_gray>•</dark_gray> <gray>Remover miembro</gray>");
         ChatUtil.msgNoPrefix(sender, "<#22D3EE>/ta disband [jugador]</#22D3EE> <dark_gray>•</dark_gray> <gray>Disolver equipo</gray>");

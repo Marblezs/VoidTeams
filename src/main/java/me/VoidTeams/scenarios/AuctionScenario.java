@@ -84,14 +84,14 @@ public class AuctionScenario extends TeamScenario {
         }
 
         int teamSize = plugin.getTeamManager().getTeamSize();
-        List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+        List<Player> players = new ArrayList<>(plugin.getTeamScenarioManager().getFormationPlayers());
 
         if (teamSize <= 1) {
             ChatUtil.msg(sender, "<#FF5C5C>Auction requiere TeamSize mayor a 1.</#FF5C5C>");
             return;
         }
         if (players.size() < 4) {
-            ChatUtil.msg(sender, "<#FF5C5C>Auction necesita al menos 4 jugadores online.</#FF5C5C>");
+            ChatUtil.msg(sender, "<#FF5C5C>Auction necesita al menos 4 jugadores elegibles.</#FF5C5C>");
             return;
         }
 
@@ -145,6 +145,7 @@ public class AuctionScenario extends TeamScenario {
                 "<#FFD166><bold>TEAM AUCTION</bold></#FFD166>\n" +
                 "<gray>Capitanes:</gray> <white>" + captainNames.substring(1, captainNames.length() - 1) + "</white>\n" +
                 "<gray>Usa:</gray> <#22D3EE>/team bid &lt;créditos&gt;</#22D3EE> <dark_gray>•</dark_gray> <gray>Jugadores:</gray> <white>" + playerPool.size() + "</white>\n" +
+                "<gray>Puja:</gray> <white>" + settingInt("minimum-opening-bid", 1) + " inicial / +" + settingInt("minimum-increment", 5) + "</white> <dark_gray>•</dark_gray> <gray>Tiempo:</gray> <white>" + settingInt("bid-time-seconds", 15) + "s</white>\n" +
                 "<dark_gray>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</dark_gray>"
         );
         ChatUtil.titleAll("<#FFD166><bold>AUCTION</bold></#FFD166>",
@@ -475,6 +476,34 @@ public class AuctionScenario extends TeamScenario {
                 }
                 return true;
             }
+            case "opening", "openingbid", "opening-bid" -> {
+                if (args.length < 2) {
+                    ChatUtil.msg(sender, "<gray>Uso:</gray> <#22D3EE>/teamadm scen auction opening [cantidad]</#22D3EE>");
+                    return true;
+                }
+                try {
+                    int value = Math.max(1, Integer.parseInt(args[1]));
+                    plugin.getTeamScenarioManager().set(id(), "minimum-opening-bid", value);
+                    ChatUtil.msg(sender, "<#6BCB77>Puja inicial mínima:</#6BCB77> <white>" + value + "</white>");
+                } catch (NumberFormatException ex) {
+                    ChatUtil.msg(sender, "<#FF5C5C>Debes indicar un número.</#FF5C5C>");
+                }
+                return true;
+            }
+            case "antisnipe", "anti-snipe" -> {
+                if (args.length < 2) {
+                    ChatUtil.msg(sender, "<gray>Uso:</gray> <#22D3EE>/teamadm scen auction antisnipe [segundos]</#22D3EE>");
+                    return true;
+                }
+                try {
+                    int value = Math.max(0, Integer.parseInt(args[1]));
+                    plugin.getTeamScenarioManager().set(id(), "anti-snipe-seconds", value);
+                    ChatUtil.msg(sender, "<#6BCB77>Anti-snipe:</#6BCB77> <white>" + value + "s</white>");
+                } catch (NumberFormatException ex) {
+                    ChatUtil.msg(sender, "<#FF5C5C>Debes indicar un número.</#FF5C5C>");
+                }
+                return true;
+            }
             default -> {
                 return false;
             }
@@ -483,10 +512,12 @@ public class AuctionScenario extends TeamScenario {
 
     @Override
     public List<String> tabComplete(CommandSender sender, String[] args) {
-        if (args.length == 1) return List.of("start", "stop", "status", "credits", "bidtime", "increment");
+        if (args.length == 1) return List.of("start", "stop", "status", "credits", "bidtime", "opening", "increment", "antisnipe");
         if (args.length == 2 && args[0].equalsIgnoreCase("credits")) return List.of("50", "75", "100", "150", "200");
         if (args.length == 2 && args[0].equalsIgnoreCase("bidtime")) return List.of("10", "15", "20", "30");
+        if (args.length == 2 && args[0].equalsIgnoreCase("opening")) return List.of("1", "5", "10", "20");
         if (args.length == 2 && args[0].equalsIgnoreCase("increment")) return List.of("1", "5", "10", "20");
+        if (args.length == 2 && args[0].equalsIgnoreCase("antisnipe")) return List.of("0", "3", "5", "10");
         return List.of();
     }
 
@@ -496,7 +527,9 @@ public class AuctionScenario extends TeamScenario {
                 "<gray>Subasta:</gray> " + (auctionRunning ? "<#6BCB77>En progreso</#6BCB77>" : "<#AAB2BD>En espera</#AAB2BD>"),
                 "<gray>Créditos iniciales:</gray> <white>" + settingInt("starting-credits", 100) + "</white>",
                 "<gray>Tiempo por lote:</gray> <white>" + settingInt("bid-time-seconds", 15) + "s</white>",
-                "<gray>Incremento mínimo:</gray> <white>" + settingInt("minimum-increment", 5) + "</white>"
+                "<gray>Puja inicial:</gray> <white>" + settingInt("minimum-opening-bid", 1) + "</white>",
+                "<gray>Incremento mínimo:</gray> <white>" + settingInt("minimum-increment", 5) + "</white>",
+                "<gray>Anti-snipe:</gray> <white>" + settingInt("anti-snipe-seconds", 5) + "s</white>"
         );
     }
 }

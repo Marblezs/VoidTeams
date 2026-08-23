@@ -10,6 +10,7 @@ import me.VoidTeams.scenarios.TeamInventoryScenario;
 import me.VoidTeams.scenarios.TeamScenario;
 import me.VoidTeams.utils.ChatUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -32,6 +33,7 @@ public class TeamScenarioManager {
 
     public TeamScenarioManager(VoidTeams plugin) {
         this.plugin = plugin;
+        migrateFormationConfig();
         this.file = new File(plugin.getDataFolder(), "team-scenarios.yml");
 
         boolean firstCreation = !file.exists();
@@ -252,14 +254,57 @@ public class TeamScenarioManager {
                 || (auction != null && auction.isAuctionRunning());
     }
 
+    public List<Player> getFormationPlayers() {
+        boolean includeHosters = plugin.getConfig().getBoolean("formation.include-hosters", false);
+        boolean excludeSpectators = plugin.getConfig().getBoolean("formation.exclude-spectators", true);
+
+        return (List<Player>) Bukkit.getOnlinePlayers().stream()
+                .filter(player -> !excludeSpectators || player.getGameMode() != GameMode.SPECTATOR)
+                .filter(player -> includeHosters || !isFormationHoster(player))
+                .toList();
+    }
+
+    public boolean isFormationHoster(Player player) {
+        if (player == null) return false;
+        String permission = getFormationHosterPermission();
+        return !permission.isBlank() && player.hasPermission(permission);
+    }
+
+    public String getFormationHosterPermission() {
+        return plugin.getConfig().getString("formation.hoster-permission", "voidteams.hoster");
+    }
+
+    public boolean areHostersIncluded() {
+        return plugin.getConfig().getBoolean("formation.include-hosters", false);
+    }
+
+    public boolean areSpectatorsExcluded() {
+        return plugin.getConfig().getBoolean("formation.exclude-spectators", true);
+    }
+
+    private void migrateFormationConfig() {
+        boolean changed = false;
+        if (!plugin.getConfig().contains("formation.include-hosters")) {
+            boolean legacy = plugin.getConfig().getBoolean("formation.include-admins", false);
+            plugin.getConfig().set("formation.include-hosters", legacy);
+            changed = true;
+        }
+        if (!plugin.getConfig().contains("formation.hoster-permission")) {
+            plugin.getConfig().set("formation.hoster-permission", "voidteams.hoster");
+            changed = true;
+        }
+        if (plugin.getConfig().contains("formation.include-admins")) {
+            plugin.getConfig().set("formation.include-admins", null);
+            changed = true;
+        }
+        if (changed) plugin.saveConfig();
+    }
+
     public String getConfigDisplay() {
         String ff = plugin.getConfig().getBoolean("friendly-fire", false) ? "FF On" : "FF Off";
         String chat = plugin.getTeamManager().isChatLocked() ? "Chat Off" : "Chat On";
         String teams = plugin.getTeamManager().isTeamsLocked() ? "Teams Locked" : "Teams Open";
-        String size = plugin.getTeamManager().getTeamSize() == 1
-                ? "FFA"
-                : "To" + plugin.getTeamManager().getTeamSize();
-        return size + " • " + plugin.getTeamManager().getTeamTypeDisplay() + " • " + ff + " • " + chat + " • " + teams;
+        return plugin.getTeamManager().getTeamSizeDisplay() + " • " + ff + " • " + chat + " • " + teams;
     }
 
     public int getInt(String scenarioId, String path, int def) {

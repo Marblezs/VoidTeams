@@ -13,6 +13,7 @@ public class SoundManager {
 
     public SoundManager(VoidTeams plugin) {
         this.plugin = plugin;
+        migrateLegacyNoisySounds();
     }
 
     public enum SoundType {
@@ -24,21 +25,21 @@ public class SoundManager {
         TEAM_JOIN("minecraft:entity.experience_orb.pickup", 0.9f, 1.55f),
         TEAM_LEAVE("minecraft:block.note_block.bass", 0.75f, 0.9f),
         TEAM_RANDOMIZED("minecraft:block.amethyst_block.chime", 1.0f, 1.0f),
-        TEAM_ADMIN_CHANGE("minecraft:item.goat_horn.sound.0", 0.8f, 1.0f),
-        TEAM_CLEAR("minecraft:entity.ender_dragon.growl", 0.55f, 1.35f),
+        TEAM_ADMIN_CHANGE("minecraft:ui.button.click", 0.35f, 1.15f),
+        TEAM_CLEAR("minecraft:block.note_block.bass", 0.35f, 0.9f),
         TEAM_CHAT("minecraft:block.note_block.hat", 0.35f, 1.8f),
         TEAM_INVENTORY_OPEN("minecraft:block.ender_chest.open", 0.65f, 1.15f),
         TEAM_INVENTORY_TOGGLE("minecraft:block.amethyst_block.chime", 0.9f, 1.1f),
         TEAM_LOCATION("minecraft:block.note_block.bit", 0.35f, 1.65f),
         TEAM_ORES("minecraft:block.note_block.xylophone", 0.35f, 1.4f),
         TEAM_SCENARIO_TOGGLE("minecraft:block.amethyst_block.chime", 0.9f, 1.25f),
-        SHARED_HEALTH_DAMAGE("minecraft:block.note_block.didgeridoo", 0.45f, 0.8f),
-        CAPTAINS_START("minecraft:item.goat_horn.sound.1", 0.8f, 1.0f),
+        SHARED_HEALTH_DAMAGE("minecraft:block.note_block.bass", 0.2f, 0.75f),
+        CAPTAINS_START("minecraft:block.amethyst_block.chime", 0.55f, 1.1f),
         CAPTAINS_TURN("minecraft:block.note_block.chime", 0.75f, 1.35f),
         CAPTAINS_PICK("minecraft:entity.experience_orb.pickup", 0.8f, 1.55f),
         CAPTAINS_TICK("minecraft:block.note_block.hat", 0.45f, 1.65f),
         CAPTAINS_END("minecraft:ui.toast.challenge_complete", 0.8f, 1.0f),
-        AUCTION_START("minecraft:item.goat_horn.sound.2", 0.8f, 1.0f),
+        AUCTION_START("minecraft:block.note_block.bell", 0.55f, 1.2f),
         AUCTION_LOT("minecraft:block.note_block.bell", 0.8f, 1.1f),
         AUCTION_BID("minecraft:block.note_block.pling", 0.7f, 1.45f),
         AUCTION_TICK("minecraft:block.note_block.hat", 0.45f, 1.75f),
@@ -58,6 +59,29 @@ public class SoundManager {
             this.volume = volume;
             this.pitch = pitch;
         }
+    }
+
+    private void migrateLegacyNoisySounds() {
+        boolean changed = false;
+        changed |= replaceLegacySound("team_admin_change", "minecraft:item.goat_horn.sound.0", "minecraft:ui.button.click", 0.35, 1.15);
+        changed |= replaceLegacySound("captains_start", "minecraft:item.goat_horn.sound.1", "minecraft:block.amethyst_block.chime", 0.55, 1.10);
+        changed |= replaceLegacySound("auction_start", "minecraft:item.goat_horn.sound.2", "minecraft:block.note_block.bell", 0.55, 1.20);
+        changed |= replaceLegacySound("team_clear", "minecraft:entity.ender_dragon.growl", "minecraft:block.note_block.bass", 0.35, 0.90);
+        changed |= replaceLegacySound("shared_health_damage", "minecraft:block.note_block.didgeridoo", "minecraft:block.note_block.bass", 0.20, 0.75);
+        if (changed) {
+            plugin.saveConfig();
+            plugin.getLogger().info("Sonidos antiguos de VoidTeams migrados a efectos mas suaves.");
+        }
+    }
+
+    private boolean replaceLegacySound(String id, String legacy, String replacement, double volume, double pitch) {
+        String path = "sounds." + id;
+        String current = plugin.getConfig().getString(path + ".sound");
+        if (current == null || !current.equalsIgnoreCase(legacy)) return false;
+        plugin.getConfig().set(path + ".sound", replacement);
+        plugin.getConfig().set(path + ".volume", volume);
+        plugin.getConfig().set(path + ".pitch", pitch);
+        return true;
     }
 
     public void play(Player player, SoundType type) {

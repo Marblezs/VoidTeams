@@ -201,13 +201,15 @@ sin que VoidUHC importe clases internas de VoidTeams.
 %voidteams_config_chat%
 %voidteams_config_teams%
 %voidteams_teamsize%
+%voidteams_mode%
+%voidteams_type_raw%
 ```
 
 Ejemplo:
 
 ```text
 %voidteams_configs%
--> To2 • Chosen • FF Off • Chat On • Teams Open
+-> Cto2 • FF Off • Chat On • Teams Open
 ```
 
 ### Captains runtime
@@ -238,8 +240,10 @@ Ejemplo:
 %voidteams_team_icon%
 %voidteams_team_count%
 %voidteams_type%
+%voidteams_type_raw%
 %voidteams_size%
 %voidteams_teamsize%
+%voidteams_mode%
 %voidteams_has_team%
 %voidteams_chat%
 %voidteams_teaminventory%

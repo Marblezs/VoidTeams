@@ -57,12 +57,13 @@ public class TeamChatListener implements Listener {
             TextColor color = TextColor.fromHexString(theme.hexColor());
             if (color == null) color = TextColor.color(0x8B5CF6);
 
-            Component formatted = Component.text("EQUIPO ", TextColor.color(0xAAB2BD))
-                    .decorate(TextDecoration.BOLD)
-                    .append(Component.text("[" + theme.icon() + "] ", color))
-                    .append(Component.text(player.getName(), TextColor.color(0xF5F7FA)))
-                    .append(Component.text(" » ", TextColor.color(0x555B66)))
-                    .append(originalMessage);
+            Component formatted = Component.text()
+                    .append(Component.text("EQUIPO ", TextColor.color(0xAAB2BD)).decorate(TextDecoration.BOLD))
+                    .append(Component.text("[" + theme.icon() + "] ", color).decoration(TextDecoration.BOLD, false))
+                    .append(Component.text(player.getName(), TextColor.color(0xF5F7FA)).decoration(TextDecoration.BOLD, false))
+                    .append(Component.text(" » ", TextColor.color(0x555B66)).decoration(TextDecoration.BOLD, false))
+                    .append(originalMessage.decoration(TextDecoration.BOLD, false))
+                    .build();
 
             for (String entry : team.getEntries()) {
                 Player member = Bukkit.getPlayerExact(entry);

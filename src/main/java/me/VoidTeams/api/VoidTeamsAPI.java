@@ -28,6 +28,10 @@ public interface VoidTeamsAPI {
 
     String getTeamType();
 
+    String getEffectiveTeamType();
+
+    String getTeamSizeDisplay();
+
     boolean isFriendlyFireEnabled();
 
     boolean areTeamsLocked();

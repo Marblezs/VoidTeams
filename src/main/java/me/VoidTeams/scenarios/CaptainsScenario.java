@@ -75,14 +75,14 @@ public class CaptainsScenario extends TeamScenario {
         }
 
         int teamSize = plugin.getTeamManager().getTeamSize();
-        List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+        List<Player> players = new ArrayList<>(plugin.getTeamScenarioManager().getFormationPlayers());
 
         if (teamSize <= 1) {
             ChatUtil.msg(sender, "<#FF5C5C>Captains requiere TeamSize mayor a 1.</#FF5C5C>");
             return;
         }
         if (players.size() < 4) {
-            ChatUtil.msg(sender, "<#FF5C5C>Captains necesita al menos 4 jugadores online.</#FF5C5C>");
+            ChatUtil.msg(sender, "<#FF5C5C>Captains necesita al menos 4 jugadores elegibles.</#FF5C5C>");
             return;
         }
 
@@ -132,6 +132,7 @@ public class CaptainsScenario extends TeamScenario {
                 "<#FFD166><bold>CAPTAINS DRAFT</bold></#FFD166>\n" +
                 "<gray>Capitanes:</gray> <white>" + captainNames.substring(1, captainNames.length() - 1) + "</white>\n" +
                 "<gray>Jugadores por elegir:</gray> <#22D3EE>" + pool.size() + "</#22D3EE> <dark_gray>•</dark_gray> <gray>TeamSize:</gray> <white>" + teamSize + "</white>\n" +
+                "<gray>Turno:</gray> <white>" + settingInt("pick-time-seconds", 30) + "s</white> <dark_gray>•</dark_gray> <gray>Elegir:</gray> <#22D3EE>/team pick &lt;jugador&gt;</#22D3EE>\n" +
                 "<dark_gray>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</dark_gray>"
         );
         ChatUtil.titleAll("<#FFD166><bold>CAPTAINS</bold></#FFD166>",

@@ -56,13 +56,10 @@ public class VoidTeamsExpansion extends PlaceholderExpansion {
         String key = params == null ? "" : params.toLowerCase();
 
         switch (key) {
-            case "type" -> { return plugin.getTeamManager().getTeamTypeDisplay(); }
+            case "type" -> { return plugin.getTeamManager().getEffectiveTeamTypeDisplay(); }
+            case "type_raw" -> { return plugin.getTeamManager().getTeamTypeDisplay(); }
             case "size" -> { return String.valueOf(plugin.getTeamManager().getTeamSize()); }
-            case "teamsize" -> {
-                return plugin.getTeamManager().getTeamSize() == 1
-                        ? "FFA"
-                        : plugin.getTeamManager().getTeamTypeDisplay() + " to " + plugin.getTeamManager().getTeamSize();
-            }
+            case "teamsize", "mode" -> { return plugin.getTeamManager().getTeamSizeDisplay(); }
             case "teaminventory", "team_inventory" -> {
                 return String.valueOf(plugin.getTeamInventoryManager().isEnabled());
             }

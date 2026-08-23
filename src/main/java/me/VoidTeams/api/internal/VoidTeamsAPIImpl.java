@@ -75,6 +75,16 @@ public final class VoidTeamsAPIImpl implements VoidTeamsAPI {
     }
 
     @Override
+    public String getEffectiveTeamType() {
+        return plugin.getTeamManager().getEffectiveTeamTypeDisplay();
+    }
+
+    @Override
+    public String getTeamSizeDisplay() {
+        return plugin.getTeamManager().getTeamSizeDisplay();
+    }
+
+    @Override
     public boolean isFriendlyFireEnabled() {
         return plugin.getConfig().getBoolean("friendly-fire", false);
     }

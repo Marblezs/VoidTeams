@@ -1,5 +1,5 @@
 name: VoidTeams
-version: 2.2.0
+version: 2.2.3
 main: me.VoidTeams.VoidTeams
 api-version: '1.21'
 author: MarcyWu
@@ -41,3 +41,6 @@ permissions:
     default: op
     children:
       voidteams.member: true
+  voidteams.hoster:
+    description: Marca al jugador como hoster para excluirlo opcionalmente de Captains y Auction.
+    default: false

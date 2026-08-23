@@ -125,6 +125,37 @@ public class TeamManager {
         return teamType.equalsIgnoreCase("Choosen") ? "Chosen" : teamType;
     }
 
+    public String getEffectiveTeamTypeDisplay() {
+        if (teamSize <= 1) return "FFA";
+
+        TeamScenarioManager scenarioManager = plugin.getTeamScenarioManager();
+        if (scenarioManager != null) {
+            if (scenarioManager.isEnabled("auction")) return "Auction";
+            if (scenarioManager.isEnabled("captains")) return "Captains";
+            if (scenarioManager.isEnabled("lafs")
+                    || scenarioManager.isEnabled("love_at_first_sight")
+                    || scenarioManager.isEnabled("loveatfirstsight")) {
+                return "LAFS";
+            }
+        }
+
+        return getTeamTypeDisplay();
+    }
+
+    public String getTeamSizeDisplay() {
+        if (teamSize <= 1) return "FFA";
+
+        String effective = getEffectiveTeamTypeDisplay();
+        if (effective.equals("Auction") || effective.equals("Captains") || effective.equals("LAFS")) {
+            return effective;
+        }
+
+        if (teamType.equalsIgnoreCase("Random")) return "Rto" + teamSize;
+        if (teamType.equalsIgnoreCase("Choosen")) return "Cto" + teamSize;
+        if (teamType.equalsIgnoreCase("Vote")) return "Vto" + teamSize;
+        return "To" + teamSize;
+    }
+
     public boolean isTeamsLocked() {
         return teamsLocked;
     }
@@ -205,7 +236,7 @@ public class TeamManager {
         plugin.getConfig().set("max-team-size", newSize);
         plugin.saveConfig();
 
-        String display = newSize == 1 ? "FFA" : "To" + newSize;
+        String display = getTeamSizeDisplay();
         ChatUtil.broadcastNoPrefix(
                 "<dark_gray>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</dark_gray>\n" +
                 "<#22D3EE><bold>TEAM SIZE ACTUALIZADO</bold></#22D3EE>\n" +
@@ -271,7 +302,7 @@ public class TeamManager {
                 new PendingInvite(inviter.getUniqueId(), System.currentTimeMillis() + expireSeconds * 1000L));
 
         ChatUtil.msg(inviter,
-                "<#6BCB77>Invitación enviada a <white><bold>" + target.getName() + "</bold></white>.</#6BCB77>");
+                "<#6BCB77>Invitación enviada a <white>" + target.getName() + "</white>.</#6BCB77>");
         ChatUtil.sendActionBar(inviter,
                 "<#6BCB77>✓</#6BCB77> <white>Invitación enviada a</white> <#22D3EE>" + target.getName() + "</#22D3EE>");
         plugin.getSoundManager().play(inviter, SoundManager.SoundType.INVITE_SENT);

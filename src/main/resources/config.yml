@@ -20,6 +20,12 @@ friendly-fire: false
 teams-locked: false
 team-chat-locked: false
 
+
+formation:
+  include-hosters: false
+  hoster-permission: "voidteams.hoster"
+  exclude-spectators: true
+
 # Invitaciones.
 invite-expire-seconds: 60
 
@@ -157,14 +163,14 @@ sounds:
     pitch: 1.0
   team_admin_change:
     enabled: true
-    sound: "minecraft:item.goat_horn.sound.0"
-    volume: 0.8
-    pitch: 1.0
+    sound: "minecraft:ui.button.click"
+    volume: 0.35
+    pitch: 1.15
   team_clear:
     enabled: true
-    sound: "minecraft:entity.ender_dragon.growl"
-    volume: 0.55
-    pitch: 1.35
+    sound: "minecraft:block.note_block.bass"
+    volume: 0.35
+    pitch: 0.9
   team_chat:
     enabled: true
     sound: "minecraft:block.note_block.hat"
@@ -218,14 +224,14 @@ sounds:
     pitch: 1.25
   shared_health_damage:
     enabled: true
-    sound: "minecraft:block.note_block.didgeridoo"
-    volume: 0.45
-    pitch: 0.8
+    sound: "minecraft:block.note_block.bass"
+    volume: 0.2
+    pitch: 0.75
   captains_start:
     enabled: true
-    sound: "minecraft:item.goat_horn.sound.1"
-    volume: 0.8
-    pitch: 1.0
+    sound: "minecraft:block.amethyst_block.chime"
+    volume: 0.55
+    pitch: 1.1
   captains_turn:
     enabled: true
     sound: "minecraft:block.note_block.chime"
@@ -248,9 +254,9 @@ sounds:
     pitch: 1.0
   auction_start:
     enabled: true
-    sound: "minecraft:item.goat_horn.sound.2"
-    volume: 0.8
-    pitch: 1.0
+    sound: "minecraft:block.note_block.bell"
+    volume: 0.55
+    pitch: 1.2
   auction_lot:
     enabled: true
     sound: "minecraft:block.note_block.bell"

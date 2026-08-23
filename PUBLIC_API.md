@@ -59,3 +59,29 @@ VoidTeamsAPI api = VoidTeamsProvider.get();
 ```
 
 Las operaciones `setScenarioEnabled` y `toggleScenario` deben ejecutarse en el hilo principal de Bukkit.
+
+## Modo visible
+
+La API expone `getEffectiveTeamType()` y `getTeamSizeDisplay()` para mostrar el modo real configurado sin reconstruir reglas fuera de VoidTeams.
+
+Ejemplos de `getTeamSizeDisplay()`:
+
+```
+FFA
+Cto2
+Rto2
+Vto3
+Captains
+Auction
+LAFS
+```
+
+PlaceholderAPI usa la misma resolución:
+
+```
+%voidteams_type%
+%voidteams_teamsize%
+%voidteams_mode%
+%voidteams_type_raw%
+%voidteams_size%
+```
