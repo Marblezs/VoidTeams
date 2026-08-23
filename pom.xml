@@ -5,7 +5,7 @@
 
     <groupId>me.VoidTeams</groupId>
     <artifactId>VoidTeams</artifactId>
-    <version>2.2.4</version>
+    <version>v2.2.4</version>
 
     <properties>
         <maven.compiler.release>21</maven.compiler.release>
