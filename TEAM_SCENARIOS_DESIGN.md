@@ -33,18 +33,3 @@ Cada scenario tiene:
 - settings en `team-scenarios.yml`
 
 Los listeners se registran una vez. Cada listener verifica `isActive()`.
-
-## Integración con VoidUHC
-
-No se importa `VoidTeams` dentro de VoidUHC para mostrar reglas. La integración visual se hace con PlaceholderAPI:
-
-```text
-%voidteams_scenarios%
-%voidteams_configs%
-%voidteams_scenario_team_inventory_display%
-%voidteams_scenario_shared_health_display%
-%voidteams_scenario_captains_display%
-%voidteams_scenario_auction_display%
-```
-
-Así BetterGUI/GUI de scenarios y el post de Discord pueden consumir el estado sin acoplar ambos plugins.
