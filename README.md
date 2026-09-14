@@ -1,6 +1,6 @@
 # VoidTeams 2.2
 
-VoidTeams es el plugin de equipos que acompaña a VoidUHC. Su responsabilidad sigue siendo únicamente el sistema de teams: creación, invitaciones, Team Chat, RGB, TeamSize, votaciones, utilidades de equipo y ahora **Team Scenarios** independientes de los scenarios normales de VoidUHC.
+VoidTeams es el plugin de equipos que acompaña a VoidUHC Closed code. Su responsabilidad sigue siendo únicamente el sistema de teams: creación, invitaciones, Team Chat, RGB, TeamSize, votaciones, utilidades de equipo y ahora **Team Scenarios** independientes de los scenarios normales de VoidUHC.
 
 ## Team Scenarios
 
@@ -290,7 +290,7 @@ Los listeners de cada scenario se registran una sola vez. El estado activo se co
 
 ## API pública
 
-VoidTeams 2.2 expone una API estable para VoidUHC y para plugins externos. No es necesario acceder a `TeamManager` o `TeamScenarioManager` directamente.
+VoidTeams 2.2 expone una API estable para plugins externos. No es necesario acceder a `TeamManager` o `TeamScenarioManager` directamente.
 
 Con `ServicesManager`:
 
@@ -313,8 +313,6 @@ También está disponible el provider:
 ```java
 VoidTeamsAPI api = VoidTeamsProvider.get();
 ```
-
-Para VoidUHC se recomienda `softdepend: [VoidTeams]` y cargar la API mediante `ServicesManager`. El GUI de scenarios puede representar cada `TeamScenarioInfo` como un scenario normal y guardar `source=voidteams` + `scenario.id()` en el PDC del item. El click solo necesita ejecutar `api.toggleScenario(id)`.
 
 La API pública también expone TeamSize, tipo de equipos, Friendly Fire, locks, teams, miembros, colores, iconos y la paleta RGB disponible.
 
