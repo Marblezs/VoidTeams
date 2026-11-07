@@ -1,6 +1,6 @@
 # VoidTeams 2.2
 
-VoidTeams es el plugin de equipos que acompaña a VoidUHC Closed code. Su responsabilidad sigue siendo únicamente el sistema de teams: creación, invitaciones, Team Chat, RGB, TeamSize, votaciones, utilidades de equipo y ahora **Team Scenarios** independientes de los scenarios normales de VoidUHC.
+VoidTeams es el plugin de equipos que acompaña a VoidUHC Closed code. Su responsabilidad sigue siendo únicamente el sistema de teams: creación, invitaciones, Team Chat, RGB, TeamSize, votaciones, utilidades de equipo y ahora **Team Scenarios** independientes de los scenarios normales de VoidUHC. (AI ASSISTED)
 
 ## Team Scenarios
 
